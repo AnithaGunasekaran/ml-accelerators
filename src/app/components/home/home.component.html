@@ -1,0 +1,17 @@
+<h2 class="text-primary">
+  Templates
+</h2>
+<div class="p-grid">
+  <ng-container *ngFor="let template of templates">
+    <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': template.selected}" (click)="selectTemplate(template)">
+      <p-button class="plusButton" icon="pi pi-plus" (onClick)="showTemplatePreview(template)"></p-button>
+      <img src="Card" src='https://ml-endpointv1.firebaseapp.com/{{template.image}}' pTooltip="{{template.desc}}" tooltipPosition="top">
+      <h6>{{template.name}}</h6>
+    </p-card>
+  </ng-container>
+</div>
+<ng-container *ngIf="templates.length">
+  <p-checkbox [(ngModel)]="isAllTemplateSelected" label="Select All" binary="true" (onChange)="checkAllTemplateSelectedOrNot()"></p-checkbox>
+  <p-button class="extractButton" label="Extract" (click)="navigateToExtract()"></p-button>
+</ng-container>
+<app-modal></app-modal>

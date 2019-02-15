@@ -1,0 +1,84 @@
+
+<div class="container">
+   
+    <div>
+        <div *ngIf="processedFiles === 0">
+            <p>Fetched {{total}} file(s)</p> 
+        </div>
+        <div *ngIf="processedFiles > 0">
+            <p>Processed {{processedFiles}} of {{total}} file(s) in {{processingTime}} seconds</p>
+        </div> 
+    </div>
+    <div *ngIf="showExtract">
+        <button [disabled]="disableExtract" class="btn btn-primary" (click)='extractJSON()'>{{extractText}}</button>
+    </div>
+   
+        
+    <p-dialog [(visible)]="display" [modal]="true" [positionTop]="0" [maximizable]="true" [style]="{width: '100%'}">
+        <div class="content" [style.min-height.px]="imageH+100">
+            <div style="flex: 0.75">
+                <div  [style.min-height.px]="imageH" class="left">
+                    <img src={{pdfSrc}} width="auto" height="{{imageH}}"/>
+                </div>
+            </div>
+            <div style="flex: 1; overflow: auto;">
+                <div [style.min-height.px]="imageH+4" class="right">
+                      <div innerHTML={{jsonHTML}} style="overflow: scroll" [style.max-height.px]="imageH">  
+                                                </div>
+                 </div>
+            </div>
+        </div>
+        
+        <!-- <table class="dialogContainer" cellpadding="20" cellspacing="0" width="100%">
+            <tr>
+                <td align="left" valign="top" width="40%">
+                    <div class="content"><img src={{pdfSrc}} width="auto" height="{{imageH}}"/></div> 
+                </td>
+                <td width="55%" align="right">
+                    <div class="content">
+
+                    </div>
+                   
+                </td> 
+            </tr> 
+        </table> -->
+      
+    </p-dialog>
+    <p-table cellpadding="0" cellspacing="0"
+    [ngClass]="'borderless'" [value]="docsArray">
+    <ng-template  cellpadding="0" cellspacing="0" pTemplate="header">
+        <tr [ngClass]="'rowHeader'">
+            <th [ngClass]="'client'">Template Name</th>
+            <th [ngClass]="'name'">Document Name</th>
+            <th [ngClass]="'status'">Status</th>
+            <th [ngClass]="'resultcell'" >Result</th>
+        </tr>
+    </ng-template>
+    <ng-template  cellpadding="0" cellspacing="0" pTemplate="body" let-file>
+        <tr [ngClass]="'row'">
+            <td hidden>{{file.id}}</td>
+            <td hidden>{{file.preview}}</td>
+            <td valign="center" class="client">{{file.client}}</td>
+            <td valign="center" class="name" innerHTML="{{file.name}}"></td>
+            <td valign="center" class="status" [ngClass]="file.status === 'In progress' ? 'loading': '' ">{{file.status}}</td>
+            <td valign="top" class="resultcell" [ngClass]="file.json === '' ? 'hide': 'show' " (click)="open(file)">
+                <div innerHTML='{{previewJSON(file.json)}}'></div>
+                <p-button class="plusButton" icon="pi pi-plus" (onClick)="open(file)"></p-button>
+
+            </td>
+        </tr>
+    </ng-template>
+    </p-table>
+    
+</div>
+
+ <!-- <div>
+              <div [ngStyle]="{height:'300px', display: 'block', width: '50%', float: 'left'}">
+                   <div innerHTML="{{jsonHTML}}"></div>
+              </div>
+              <div [ngStyle]="{height:'700px',  display: 'block', width: '50%', float: 'right'}">
+                    <pdf-viewer [src]="'https://ml-endpointv1.firebaseapp.com/assets/pdfs/1.pdf'" 
+                               
+                    ></pdf-viewer>
+              </div>
+          </div> -->
