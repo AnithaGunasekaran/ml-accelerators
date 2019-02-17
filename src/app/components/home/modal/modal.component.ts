@@ -11,10 +11,14 @@ export class ModalComponent implements OnInit {
   display = false;
   previewedTemplate = {};
   imageH : number = 0;
-  constructor() { }
+  constructor() { 
+    
+  }
 
   ngOnInit() {
+   
     this.imageH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)+10;
+  
   }
 
 }

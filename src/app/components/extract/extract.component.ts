@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, HostBinding } from '@angular/core';
 import { TemplatesService } from '../../services/templates.service';
 import { Documents } from '../../models/documents';
-
+import { Router } from '@angular/router';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { ERROR_COMPONENT_TYPE } from '@angular/compiler';
 import { HomeService } from '../home/services/home.service';
@@ -27,30 +27,56 @@ export class ExtractComponent implements OnInit {
   show: string = 'hide';
   extractText: string = "Extract";
   disableExtract: Boolean = false;
-  imageH: number=0;;
-  constructor(private apiService:TemplatesService, private modalService: NgbModal, private homeSer:HomeService) { }
+  imageH: number=0;
+  errorMessage: string = '';
+  constructor(private apiService:TemplatesService, private router: Router, private homeSer:HomeService) { }
 
   ngOnInit() {
     this.homeSer.currentSelectedTemplates.subscribe((res)=>{
       this.selectedTemplates = res;
+
     })
+    if(this.selectedTemplates.length === 0){
+      this.router.navigate(['home']);
+    }
     var pArr = [];
 
 
     for(var i = 0; i < this.selectedTemplates.length; i++){
-     
-        pArr.push(this.apiService.fetchFiles(this.selectedTemplates[i].id).then((docs)=>{
-          for(let j= 0; j < docs.length; j++){
-            docs[j].status = "Not started";
-            docs[j].json = "";
-            docs[j].name = `<a target="_blank" href="https://ml-endpointv1.firebaseapp.com/${docs[j].link}">${docs[j].name}</a>`
-            this.docsArray.push(docs[j]);
-            this.total = this.docsArray.length;
+      var name = this.selectedTemplates[i].name;
+        pArr.push(this.apiService.fetchFiles(this.selectedTemplates[i].id).then((res:any)=>{
+        
+        
+          if(res.code === 200){
+            let docs = res.result;
+            for(let j= 0; j < docs.length; j++){
+              docs[j].status = "Not started";
+              docs[j].json = "";
+              docs[j].name = `<a target="_blank" href="https://ml-endpointv1.firebaseapp.com/${docs[j].link}">${docs[j].name}</a>`
+              this.docsArray.push(docs[j]);
+              this.total = this.docsArray.length;
+            }
+          }
+          else{
+            this.errorMessage = `Unable to fetch documents matching template(s)`
           }
         }));
       }
       Promise.all(pArr).then(()=>{
         this.total = this.docsArray.length;
+      }).catch((err)=>{
+       
+        console.log(err)
+        if(err.status === 504){
+          this.errorMessage = "Unable to fetch document(s) matching certain template(s)";
+          return;
+        }
+        if(err.status === 500){
+          this.errorMessage = "Unable to fetch documents. Please try again"
+        }
+        this.errorMessage = "Unable to fetch documents. Please try again later";
+        this.showExtract = false;
+        //Log error to filek
       });
   }
 
@@ -163,7 +189,7 @@ export class ExtractComponent implements OnInit {
   }
 
   open(doc) {
-    console.log(Math.max(document.documentElement.clientHeight, window.innerHeight || 0))
+  
     this.imageH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 100;
     if(doc.json !== ""){
       this.display = true;

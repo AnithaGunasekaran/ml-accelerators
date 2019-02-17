@@ -28,7 +28,7 @@ export class HomeService {
   constructor(private httpClient: HttpClient) {
   }
 
-  public getTeplateData() {
+  public getTemplateData() {
     // return this.templates;
     return this.httpClient.get(this.endPoint);
   }

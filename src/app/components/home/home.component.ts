@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit {
   public templates = [];
   public isAllTemplateSelected = true;
   public checkboxLabel = 'Unselect all';
+  errorMessage: string = '';
   @ViewChild(ModalComponent) private modal;
 
   constructor(private homeService: HomeService, private router: Router) { }
@@ -25,18 +26,27 @@ export class HomeComponent implements OnInit {
   }
 
   private getTemplateData() {
-    this.homeService.getTeplateData().subscribe((data) => {
+    this.homeService.getTemplateData().subscribe((data) => {
       if (data) {
         this.templates = data['templates'];
         this.checkAllTemplateSelectedOrNot();
       }
+    },
+    error => {
+     this.errorMessage = "Unable to retrieve the templates. Please try again later...";
+     //Log error to a file
     });
     // this.templates = this.homeService.getTeplateData();
   }
 
   public showTemplatePreview(template) {
-    this.modal.previewedTemplate = template;
-    this.modal.display = true;
+    if(template !== null){
+      this.modal.previewedTemplate = template;
+      this.modal.display = true;
+    }
+    else{
+      //Log error to a file
+    }
   }
 
   public selectTemplate(template) {
@@ -52,10 +62,8 @@ export class HomeComponent implements OnInit {
 
   public checkAllTemplateSelectedOrNot() {
     if (this.isAllTemplateSelected) {
-      this.checkboxLabel = 'Unselect all';
       this.templates.forEach(data => data.selected = true);
     } else {
-      this.checkboxLabel = 'Select all';
       this.templates.forEach(data => data.selected = false);
     }
   }

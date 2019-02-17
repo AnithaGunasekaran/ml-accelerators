@@ -1,6 +1,8 @@
 
 <div class="container">
-   
+    <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
+          {{errorMessage}}
+    </div>
     <div>
         <div *ngIf="processedFiles === 0">
             <p>Fetched {{total}} file(s)</p> 

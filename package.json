@@ -23,6 +23,7 @@
     "bootstrap": "^4.3.1",
     "core-js": "^2.5.4",
     "ng2-pdf-viewer": "^5.2.3",
+    "ngx-logger": "^3.3.11",
     "node-sass": "^4.11.0",
     "primeflex": "^1.0.0-rc.1",
     "primeicons": "^1.0.0",
