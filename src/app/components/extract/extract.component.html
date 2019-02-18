@@ -1,10 +1,10 @@
 
 <div class="container">
-    <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
+    <div *ngIf="errorMessage !== ''"  [@enterAnimation] class="alert alert-danger" role="alert">
           {{errorMessage}}
     </div>
     <div>
-        <div *ngIf="processedFiles === 0">
+        <div *ngIf="total > 0" [@enterAnimation]>
             <p>Fetched {{total}} file(s)</p> 
         </div>
         <div *ngIf="processedFiles > 0">
@@ -30,20 +30,6 @@
                  </div>
             </div>
         </div>
-        
-        <!-- <table class="dialogContainer" cellpadding="20" cellspacing="0" width="100%">
-            <tr>
-                <td align="left" valign="top" width="40%">
-                    <div class="content"><img src={{pdfSrc}} width="auto" height="{{imageH}}"/></div> 
-                </td>
-                <td width="55%" align="right">
-                    <div class="content">
-
-                    </div>
-                   
-                </td> 
-            </tr> 
-        </table> -->
       
     </p-dialog>
     <p-table cellpadding="0" cellspacing="0"
@@ -64,7 +50,7 @@
             <td valign="center" class="name" innerHTML="{{file.name}}"></td>
             <td valign="center" class="status" [ngClass]="file.status === 'In progress' ? 'loading': '' ">{{file.status}}</td>
             <td valign="top" class="resultcell" [ngClass]="file.json === '' ? 'hide': 'show' " (click)="open(file)">
-                <div innerHTML='{{previewJSON(file.json)}}'></div>
+                <div innerHTML='{{formatJSON(file.json, "resultTable")}}'></div>
                 <p-button class="plusButton" icon="pi pi-plus" (onClick)="open(file)"></p-button>
 
             </td>

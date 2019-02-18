@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiEndPoint: 'http://localhost:5000/api',
+  public:'https://ml-endpointv1.firebaseapp.com/'
 };
 
 /*

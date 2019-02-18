@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
-
+import { environment } from '../../../../environments/environment'
 @Injectable({
   providedIn: 'root'
 })
 
 export class HomeService {
-  private endPoint = 'https://ml-endpointv1.firebaseapp.com/api/templates';
+  private endPoint = environment.apiEndPoint;
 
   // public templates = [
   //   { 'id': 1, 'name': 'Template 1', 'image': 'assets/previews/one.jpg', 'file': 'assets/pdfs/1.pdf', 'desc': 'dummy text' },
@@ -30,7 +30,7 @@ export class HomeService {
 
   public getTemplateData() {
     // return this.templates;
-    return this.httpClient.get(this.endPoint);
+    return this.httpClient.get(`${this.endPoint}/templates`);
   }
 
   public storeSelectedTemplates(templates) {

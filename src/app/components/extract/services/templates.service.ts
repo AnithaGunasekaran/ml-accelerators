@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Documents } from '../models/documents';
 import { JSONResponse } from '../models/json';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TemplatesService {
 
-   apiEndPoint = 'http://localhost:5000/api';
+   apiEndPoint = environment.apiEndPoint;
 
   constructor(private httpClient:HttpClient) {}
 
