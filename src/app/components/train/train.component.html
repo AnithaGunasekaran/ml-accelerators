@@ -1,0 +1,27 @@
+<h2 class="text-primary">Train {{selectedTemplate}}</h2>
+<div class="parent">
+    <div class="preview">
+        <img src="{{imagePath}}" />
+    </div>
+    <div class="form">
+        <div class="form-group" [formGroup]="userFormGroup" *ngFor="let field of fieldKeys;let i = index;">
+            <div class="label">
+                <label>{{field.name}}</label>
+            </div>
+            <div class="control">
+                <div *ngIf="field.type === 'scalar'">
+                    <textarea formControlName="{{field.name}}" class="form-control"></textarea>
+                </div>
+                <div *ngIf="field.type === 'table'">
+                    <div formArrayName="{{field.name}}">
+                        <div *ngFor="let name of userFormGroup.controls[field.name].controls; let i = index">
+                            <input [formControlName]="i" />
+                        </div>
+                        </div>
+                    <button (click)="addItem(field.name)">Add</button>
+                </div>
+            </div>
+        </div>
+        <button type="submit" (click)="onSubmit()">Submit</button>
+    </div>
+</div>

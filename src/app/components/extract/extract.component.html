@@ -1,20 +1,20 @@
 
 <div class="container">
+    <h2 class="text-primary">Fetch Documents</h2>
     <div *ngIf="errorMessage !== ''"  [@enterAnimation] class="alert alert-danger" role="alert">
           {{errorMessage}}
     </div>
     <div>
-        <div *ngIf="total > 0" [@enterAnimation]>
-            <p>Fetched {{total}} file(s)</p> 
+        <div>
+           <span *ngIf="isFetching">Fetching documents. Please wait...</span> 
+           <span *ngIf="!isFetching && processedFiles <= 0">Fetched {{total}} file(s)</span> 
+           <span *ngIf="processedFiles > 0">Processed {{processedFiles}} of {{total}} file(s) in {{processingTime}} second(s)</span>
         </div>
-        <div *ngIf="processedFiles > 0">
-            <p>Processed {{processedFiles}} of {{total}} file(s) in {{processingTime}} seconds</p>
-        </div> 
+        
     </div>
     <div *ngIf="showExtract">
         <button [disabled]="disableExtract" class="btn btn-primary" (click)='extractJSON()'>{{extractText}}</button>
     </div>
-   
         
     <p-dialog [(visible)]="display" [modal]="true" [positionTop]="0" [maximizable]="true" [style]="{width: '100%'}">
         <div class="content" [style.min-height.px]="imageH+100">
@@ -48,7 +48,8 @@
             <td hidden>{{file.preview}}</td>
             <td valign="center" class="client">{{file.client}}</td>
             <td valign="center" class="name" innerHTML="{{file.name}}"></td>
-            <td valign="center" class="status" [ngClass]="file.status === 'In progress' ? 'loading': '' ">{{file.status}}</td>
+            <td valign="center" class="status" [class.loading]="file.status === 'In progress'"
+            [class.error]="file.status === 'Unable to fetch data'">{{file.status}}</td>
             <td valign="top" class="resultcell" [ngClass]="file.json === '' ? 'hide': 'show' " (click)="open(file)">
                 <div innerHTML='{{formatJSON(file.json, "resultTable")}}'></div>
                 <p-button class="plusButton" icon="pi pi-plus" (onClick)="open(file)"></p-button>

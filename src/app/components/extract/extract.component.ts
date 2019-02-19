@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, HostBinding } from '@angular/core';
+
 import { TemplatesService } from '../extract/services/templates.service';
 import { Documents } from '../extract/models/documents';
 import { Router } from '@angular/router';
@@ -32,6 +33,7 @@ export class ExtractComponent implements OnInit {
   pdfSrc:any ;
   display: boolean = false;
   showExtract: boolean = false;
+  isFetching: boolean = true;
   processedFiles: number = 0;
   total: number= 0;
   selectedTemplates = [];
@@ -69,19 +71,28 @@ export class ExtractComponent implements OnInit {
           }));
       });
       Promise.all(pArr).then((data)=>{
+        console.log(failedPromises)
+        let serverErr = failedPromises.filter((item) =>{
+          return item.status >= 400 || item.status <= 500
+        });
         
-        if(failedPromises.length !== 0){
-          let templateNames = '';
-          failedPromises.map((err)=>{
-              templateNames += ` ${err.message}`
-          })
-          
-          this.errorMessage = `Documents matching templates - ${templateNames} cannot be retrieved`;
+        if(serverErr.length > 0){
+          this.errorMessage = "Unable to fetch documents. Please try again later..."
+        }
+        else{
+          if(failedPromises.length !== 0){
+            let templateNames = '';
+            failedPromises.map((err)=>{
+                templateNames += `${err.message}`
+            })
+            this.errorMessage = `Documents matching templates - ${templateNames} cannot be retrieved`;
+          }
         }
         this.total = this.docsArray.length;
+        this.isFetching = false;
         this.showExtract = true;
       }).catch((err)=>{
-        
+        this.isFetching = false;
         this.total = this.docsArray.length;
         this.showExtract = true;
         this.errorMessage = "Unable to fetch documents matching certain templates(s). Please try again later";

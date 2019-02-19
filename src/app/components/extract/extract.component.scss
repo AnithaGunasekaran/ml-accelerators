@@ -50,7 +50,7 @@ body{
 
  .container{
     max-width: 95%;
-    margin: 0 auto;
+    margin: 10px auto;
     font-family: 'Raleway', sans-serif;
     
     h1{
@@ -63,7 +63,9 @@ body{
     .hide{
         opacity: 0;
     }
-
+    button{
+        margin-top: 20px;
+    }
     .show{
         opacity: 1;
         transition: opacity 0.8s;
@@ -108,7 +110,6 @@ body{
                 }
                 &:hover{
                     background: #fafafa;
-                    cursor: pointer;
                 }
             }
            
@@ -135,6 +136,9 @@ body{
             &.resultcell{
                 width: 55%;
                 position: relative;
+                &:hover{
+                    cursor: pointer;
+                }
                 .plusButton{
                     position: absolute;
                     top: 3px;
@@ -162,6 +166,9 @@ body{
             }
             &.status{
                 width: 15%;
+                &.error{
+                    color: red;
+                }
             }
            
         }

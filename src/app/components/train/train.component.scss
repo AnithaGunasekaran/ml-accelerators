@@ -1,0 +1,48 @@
+.parent{
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+    box-sizing: border-box;
+    div{
+        
+       
+    }
+    .preview{
+        flex: 1;
+        margin-right: 10px;
+        min-height: 200px;
+        background: white; -webkit-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
+        -moz-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
+        box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);  
+        border-radius: 5px; 
+        border: solid  1px #DADADA;
+        box-sizing: border-box;
+        img{
+            max-width: 100%;
+        }
+    }
+    .form{
+        flex: 1;
+        min-height: 200px;
+        background: white; -webkit-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
+        -moz-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
+        box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);  
+        border-radius: 5px; 
+        border: solid  1px #DADADA;
+        box-sizing: border-box;
+        .form-group{
+            display: flex;
+            margin: 20px auto;
+            
+            .label{
+                flex: 1;
+                text-align: left;
+                padding-left: 20px
+            }
+            .control{
+                flex: 2;
+            }
+        }
+    }
+
+}

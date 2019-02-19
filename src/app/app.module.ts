@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -9,7 +10,7 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
 import { PdfViewerComponent } from './components/home/pdf-viewer/pdf-viewer.component';
 import { ModalComponent } from './components/home/modal/modal.component';
 import { HttpClientModule } from '@angular/common/http';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { PdfViewerModule } from 'ng2-pdf-viewer'; 
@@ -19,6 +20,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
+import { TrainComponent } from './components/train/train.component';
 
 @NgModule({
   declarations: [
@@ -27,11 +30,14 @@ import { CardModule } from 'primeng/card';
     ExtractComponent,
     PageNotFoundComponent,
     PdfViewerComponent,
-    ModalComponent
+    ModalComponent,
+    TrainComponent
   ],
   imports: [
     BrowserModule,
+    ReactiveFormsModule,
     FormsModule,
+    CommonModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,

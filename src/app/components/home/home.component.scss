@@ -29,6 +29,11 @@ body {
     }
     .ui-card {
       background-color:#FEFEFE;
+      a{
+        position: absolute;
+        top: 99%;
+        right: 10%;
+      }
     }
     .plusButton {
       position: absolute;
@@ -48,7 +53,7 @@ h6 {
   padding-top: 20px;
   position: absolute;
     top: 90%;
-    left: 30%;
+    left: 5%;
 }
 
 .extractButton {
