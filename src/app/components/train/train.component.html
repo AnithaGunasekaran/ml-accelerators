@@ -16,9 +16,11 @@
                     <div formArrayName="{{field.name}}">
                         <div *ngFor="let name of userFormGroup.controls[field.name].controls; let i = index">
                             <input [formControlName]="i" />
+                            <button class="btn-secondary" (click)="removeItem(field.name,i)">Remove</button>
                         </div>
                         </div>
-                    <button (click)="addItem(field.name)">Add</button>
+                    <button class="btn-primary" (click)="addItem(field.name)">Add</button>
+                    
                 </div>
             </div>
         </div>

@@ -84,6 +84,12 @@ export class TrainComponent implements OnInit {
 
   }
 
+  removeItem(name:string,i:number){
+    console.log(name,i);
+    const control = <FormArray>this.userFormGroup.controls[name];
+    control.removeAt(i)
+  }
+
   addItem(name:string): void {
     const control = <FormArray>this.userFormGroup.controls[name];
   // // push the value from stepTextArea to array
