@@ -4,7 +4,8 @@ import { TrainService } from './services/train.service';
 import { environment } from '../../../environments/environment';
 import { Metadata } from './models/metadata';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
-
+import { trigger, style, animate, transition } from '@angular/animations';
+import { HomeService } from '../home/services/home.service';
 
 export interface SelectedTemplate{
   name:string,
@@ -13,7 +14,21 @@ export interface SelectedTemplate{
 @Component({
   selector: 'app-train',
   templateUrl: './train.component.html',
-  styleUrls: ['./train.component.scss']
+  styleUrls: ['./train.component.scss'],
+  animations: [
+    trigger(
+      'enterAnimation', [
+        transition(':enter', [
+          style({opacity: 0}),
+          animate('1000ms', style({ opacity: 1}))
+        ]),
+        transition(':leave', [
+          style({ opacity: 1}),
+          animate('1000ms', style({ opacity: 0}))
+        ])
+      ]
+    )
+  ]
 })
 
 export class TrainComponent implements OnInit {
@@ -34,16 +49,20 @@ export class TrainComponent implements OnInit {
   items:any;
   trainJSON: any;
 
-  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder) { }
+  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService) { }
 
   ngOnInit() {
-    this.selectedTemplate ='1'//this.route.snapshot.params['id'];
-    this.selectedTemplateName = this.route.snapshot.params["name"];
-
-
+    this.homeSer.currentSelectedTemplate.subscribe((res:any)=>{
+      console.log("templ",res)
+      this.selectedTemplateName = res.name;
+      this.selectedTemplate = "1"
+    })
+    console.log(this)
     this.middleware.getMetaData(this.selectedTemplate).then((data:Metadata)=>{
  
        this.pdfArr = data.result.templates;
+
+     
       
        this.imagePath = `${environment.public}${this.pdfArr[this.currID].preview}`;
       
@@ -99,7 +118,9 @@ export class TrainComponent implements OnInit {
         this.userFormGroup.setControl(key, this.formBuilder.array(userData.telephones))
       }
     }
-    this.trainJSON = {"docs": []};
+ ;
+    this.trainJSON = {"template_id":this.selectedTemplateName,"docs": []};
+   
   }
 
   removeItem(name:string,i:number){
@@ -113,7 +134,6 @@ export class TrainComponent implements OnInit {
   }
 
   onSubmit() {
-    this.trainJSON["template_id"] = this.selectedTemplateName;
     this.trainJSON["docs"][this.currID] = { "doc": "" , "learn": {}};
     this.trainJSON["docs"][this.currID]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
     let scalarValues = {};
@@ -131,38 +151,145 @@ export class TrainComponent implements OnInit {
       "fields": tabularValues
     }}
     this.trainJSON = [this.trainJSON]
+    this.userFormGroup.reset();
 }
 
     autopopulate(){
-      let json = {
-				"fields": {
-					"Email": {
-						"type": "field",
-						"value": "Kslakekwesk;ewm21ectric.com"
-					},
-					"PO": {
-						"type": "field",
-						"value": "5700339185"
-          },
-					"Address": {
-						"type": "field",
-						"value": "ElSADFSSFSA A/S\nGJDSARISDAAdyvej 19\nO14929321I1421EJ 19\nSDAFSFSAAFASj 19\nDK AFSSARESDA Vejle"
-					}
-				},
-				"table": {
+      this.userFormGroup.reset();
+   
+      for(var key in this.userFormGroup.controls){
+        if(this.userFormGroup.controls[key] instanceof FormArray){
+            const formArray = <FormArray>this.userFormGroup.controls[key];
+            formArray.controls=[];
+            formArray.push(new FormControl())
+        }
+      }
+      let response = {"docs": [{
+				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf",
+				"learn": {
 					"fields": {
-						"Item Date": {
-							"type": "table",
-							"values": ["12.02.2018"]
+						"Email": {
+							"type": "field",
+							"value": "Kslakekwesk;ewm21ectric.com111"
 						},
-						"Material No.": {
-							"type": "table",
-							"values": ["Mat.nr:1000470830"]
+						"PO": {
+							"type": "field",
+							"value": "5700339185"
+						},
+						"Address": {
+							"type": "field",
+							"value": "ElSADFSSFSA A/S\nGJDSARISDAAdyvej 19\nO14929321I1421EJ 19\nSDAFSFSAAFASj 19\nDK AFSSARESDA Vejle"
+						}
+					},
+					"table": {
+						"fields": {
+							"Item Date": {
+								"type": "table",
+								"values": ["12.02.2018"]
+							},
+							"Material No.": {
+								"type": "table",
+								"values": ["Mat.nr:1000470830"]
+							}
 						}
 					}
 				}
-      }
-
+			},
+			{
+				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_2.pdf",
+				"learn": {
+					"fields": {
+						"Email": {
+							"type": "field",
+							"value": "kuSADSDAO0321.scSDAS4tric.com22222"
+						},
+						"PO": {
+							"type": "field",
+							"value": "LOP0128H12"
+						},
+						"Address": {
+							"type": "field",
+							"value": "J-WEQWEWQustri I/S\nMo312131264\nInd23123412ivej 28\nDSDASDA3134ed"
+						}
+					},
+					"table": {
+						"fields": {
+							"Item Date": {
+								"type": "table",
+								"values": ["13.02.2018", "13.02.2018", "13.02.2018"]
+							},
+							"Material No.": {
+								"type": "table",
+								"values": ["Mat.nr:1000601536", "Mat.nr:1000641230", "Mat.nr:1000616210"]
+							}
+						}
+					}
+				}
+			},
+			{
+        "doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_3.pdf",
+        "learn": {
+					"fields": {
+						"Email": {
+							"type": "field",
+							"value": "kuSADSDAO0321.scSDAS4tric.com33333"
+						},
+						"PO": {
+							"type": "field",
+							"value": "LOP0128H12"
+						},
+						"Address": {
+							"type": "field",
+							"value": "J-WEQWEWQustri I/S\nMo312131264\nInd23123412ivej 28\nDSDASDA3134ed"
+						}
+					},
+					"table": {
+						"fields": {
+							"Item Date": {
+								"type": "table",
+								"values": ["13.02.2018", "13.02.2018", "13.02.2018"]
+							},
+							"Material No.": {
+								"type": "table",
+								"values": ["Mat.nr:1000601536", "Mat.nr:1000641230", "Mat.nr:1000616210"]
+							}
+						}
+					}
+				}
+			},
+			{
+        "doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_4.pdf",
+        "learn": {
+					"fields": {
+						"Email": {
+							"type": "field",
+							"value": "kuSADSDAO0321.scSDAS4tric.com444"
+						},
+						"PO": {
+							"type": "field",
+							"value": "LOP0128H12"
+						},
+						"Address": {
+							"type": "field",
+							"value": "J-WEQWEWQustri I/S\nMo312131264\nInd23123412ivej 28\nDSDASDA3134ed"
+						}
+					},
+					"table": {
+						"fields": {
+							"Item Date": {
+								"type": "table",
+								"values": ["13.02.2018", "13.02.2018", "13.02.2018"]
+							},
+							"Material No.": {
+								"type": "table",
+								"values": ["Mat.nr:1000601536", "Mat.nr:1000641230", "Mat.nr:1000616210"]
+							}
+						}
+					}
+				}
+			}
+      ]};
+      let json = response.docs[this.currID]["learn"];
       var scalarValues = json["fields"];
       var tabularValues = json["table"]["fields"];
       for(var key in scalarValues){
@@ -182,7 +309,7 @@ export class TrainComponent implements OnInit {
       }
 
   }
-  switchPDF(){
+  next(){
     this.trainJSON["docs"][this.currID] = { "doc": "" , "learn": {}};
     this.trainJSON["docs"][this.currID]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
     let scalarValues = {};
@@ -209,7 +336,8 @@ export class TrainComponent implements OnInit {
       }
     }
     this.currID += 1;
-    if(this.currID >= this.pdfArr.length -1){
+    console.log("Preview ",this.pdfArr[this.currID].preview)
+    if(this.currID <= this.pdfArr.length -1){
       this.imagePath = `${environment.public}${this.pdfArr[this.currID].preview}`;
     }
   }

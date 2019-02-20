@@ -54,9 +54,11 @@ export class HomeComponent implements OnInit {
     this.isAllTemplateSelected = this.templates.every(data => data.selected === true) ? true : false;
   }
 
-  public navigate(page:string) {
+  public navigate(page:string, template:any) {
+    console.log(template)
     if(page === "train"){
-        this.router.navigate([page])
+        this.router.navigate([page]);
+        this.homeService.storeSelectedTemplate(template)
     }
     let selectedTemplates = this.templates.filter((data => data.selected === true));//[{"id":2,"name":"Template 2","image":"assets/previews/2.jpg","file":"assets/pdfs/2.pdf","desc":"Praesent eleifend eleifend ante at feugiat."}];
     this.homeService.storeSelectedTemplates(selectedTemplates);

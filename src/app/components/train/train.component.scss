@@ -1,3 +1,9 @@
+
+.btn-primary, .btn-secondary{
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 13px;
+}
 .parent{
     display: flex;
     margin-left: 20px;
@@ -30,6 +36,8 @@
         .form{
             border: solid 1px #DADADA;
             margin: 10px;
+            padding: 20px;
+            font-size: 13px;
         }
         .form-group{
             display: flex;
@@ -37,18 +45,17 @@
             .label{
                 flex: 1;
                 text-align: left;
-                padding-left: 20px
             }
             .control{
                 flex: 4;
                 position: relative;
                 text-align: left;
-                padding-right: 20px;
                 .btn-primary{
                     position: absolute;
                     top: 0;
                     left:310px;
                     width: 30px;
+                    
                 }
                 .btn-secondary{
                     position: absolute;
@@ -58,12 +65,12 @@
             }
             input[type="text"]{
                 width: 300px;
+                margin-bottom: 10px;
+            }
+            textarea, input{
+                font-size: 13px;
             }
         }
-    }
-    .btn-primary{
-        margin-left: 10px;
-        margin-right: 10px;
     }
 
 }

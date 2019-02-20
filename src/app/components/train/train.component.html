@@ -1,7 +1,7 @@
 <h2 class="text-primary">Train {{selectedTemplateName}}</h2>
 <div class="parent">
     <div class="preview">
-        <img src="{{imagePath}}" />
+        <img src="{{imagePath}}" [@enterAnimation]/>
     </div>
     <div class="form-container">
         <div class="form">
@@ -25,9 +25,11 @@
                 </div>
             </div>
         <button type="submit"  class="btn-primary" (click)="onSubmit()">Submit</button>
-        <button class="btn-primary" (click)="autopopulate()">Auto Populate</button>
+        <button class="btn-secondary" (click)="autopopulate()">Auto Populate</button>
      </div>
-     <button class="btn-primary" (click)="switchPDF()">Next</button>
+        {{pdfArr.length-1}}
+     <button class="btn-primary" *ngIf="!(currID >= pdfArr.length-1)" (click)="next()">Next</button>
+     <button class="btn-primary" *ngIf="currID !== 0" (click)="prev()">Prev</button>
     </div>
 </div>
-<pre>{{trainJSON | json}}</pre>
+<pre style="text-align: left;">{{trainJSON | json}}</pre>

@@ -22,7 +22,9 @@ export class HomeService {
   // ];
 
   private selectedTemplates = new BehaviorSubject([]);
+  private selectedTemplate = new BehaviorSubject([])
   public currentSelectedTemplates = this.selectedTemplates.asObservable();
+  public currentSelectedTemplate = this.selectedTemplate.asObservable();
 
 
   constructor(private httpClient: HttpClient) {
@@ -35,6 +37,10 @@ export class HomeService {
 
   public storeSelectedTemplates(templates) {
     this.selectedTemplates.next(templates);
+  }
+
+  public storeSelectedTemplate(template){
+    this.selectedTemplate.next(template)
   }
 
 }
