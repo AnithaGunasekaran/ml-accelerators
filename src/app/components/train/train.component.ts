@@ -89,6 +89,9 @@ export class TrainComponent implements OnInit {
     //   "Item Date": {
     //      "type": "table",
     //   },
+    //   "Item No": {
+    //     "type": "table",
+    //  },
     //   "Material No.": {
     //       "type": "table",
     //   }
@@ -154,7 +157,7 @@ export class TrainComponent implements OnInit {
     this.userFormGroup.reset();
 }
 
-    autopopulate(){
+ autopopulate(){
       this.userFormGroup.reset();
    
       for(var key in this.userFormGroup.controls){
@@ -307,7 +310,6 @@ export class TrainComponent implements OnInit {
           control.push(new FormControl(itemArray[i]))
         }
       }
-
   }
   next(){
     this.trainJSON["docs"][this.currID] = { "doc": "" , "learn": {}};
@@ -319,7 +321,7 @@ export class TrainComponent implements OnInit {
         scalarValues[key] = {"type": "field", "value":  this.userFormGroup.value[key] }
       }
       else{
-        tabularValues[key] = {"type": "field","values": this.userFormGroup.value[key]}
+        tabularValues[key] = {"type": "table","values": this.userFormGroup.value[key]}
       }
     }
    
@@ -340,6 +342,12 @@ export class TrainComponent implements OnInit {
     if(this.currID <= this.pdfArr.length -1){
       this.imagePath = `${environment.public}${this.pdfArr[this.currID].preview}`;
     }
+  }
+
+  prev(){
+    this.currID--;
+    console.log(this.currID)
+   
   }
 
 }
