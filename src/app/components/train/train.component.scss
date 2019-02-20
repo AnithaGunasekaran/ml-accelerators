@@ -3,10 +3,7 @@
     margin-left: 20px;
     margin-right: 20px;
     box-sizing: border-box;
-    div{
-        
-       
-    }
+   
     .preview{
         flex: 1;
         margin-right: 10px;
@@ -21,7 +18,7 @@
             max-width: 100%;
         }
     }
-    .form{
+    .form-container{
         flex: 1;
         min-height: 200px;
         background: white; -webkit-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
@@ -30,6 +27,10 @@
         border-radius: 5px; 
         border: solid  1px #DADADA;
         box-sizing: border-box;
+        .form{
+            border: solid 1px #DADADA;
+            margin: 10px;
+        }
         .form-group{
             display: flex;
             margin: 20px auto;
@@ -42,17 +43,27 @@
                 flex: 4;
                 position: relative;
                 text-align: left;
+                padding-right: 20px;
                 .btn-primary{
                     position: absolute;
                     top: 0;
-                    right:300px;
+                    left:310px;
+                    width: 30px;
                 }
                 .btn-secondary{
                     position: absolute;
-                    right:100px;
+                    left:360px;
+                    width: 30px;
                 }
             }
+            input[type="text"]{
+                width: 300px;
+            }
         }
+    }
+    .btn-primary{
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
 }

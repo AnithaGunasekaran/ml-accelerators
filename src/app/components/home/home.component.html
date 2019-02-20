@@ -12,7 +12,7 @@
       <p-button class="plusButton" icon="pi pi-plus" (onClick)="showTemplatePreview(template)"></p-button>
       <img src="Card" src='https://ml-endpointv1.firebaseapp.com/{{template.image}}' pTooltip="{{template.desc}}" tooltipPosition="top">
       <h6>{{template.name}}</h6>
-      <a [routerLink]="['/train', template.id]">Train</a>
+      <a [routerLink]="['/train', template.id, template.name]">Train</a>
     </p-card>
     
   </ng-container>
