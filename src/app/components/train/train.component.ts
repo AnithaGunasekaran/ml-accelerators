@@ -3,10 +3,9 @@ import { ActivatedRoute, Router} from '@angular/router';
 import { TrainService } from './services/train.service';
 import { environment } from '../../../environments/environment';
 import { Metadata } from './models/metadata';
-import { FormBuilder, FormGroup, Validators, FormArray, FormControl, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { HomeService } from '../home/services/home.service';
-import { ArrayType } from '@angular/compiler';
 
 export interface SelectedTemplate{
   name:string,
