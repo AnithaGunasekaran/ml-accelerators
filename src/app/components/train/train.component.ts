@@ -3,9 +3,10 @@ import { ActivatedRoute, Router} from '@angular/router';
 import { TrainService } from './services/train.service';
 import { environment } from '../../../environments/environment';
 import { Metadata } from './models/metadata';
-import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, FormControl, AbstractControl } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { HomeService } from '../home/services/home.service';
+import { ArrayType } from '@angular/compiler';
 
 export interface SelectedTemplate{
   name:string,
@@ -40,19 +41,21 @@ export class TrainComponent implements OnInit {
   pdfSrc: string = '';
   name: string;
   userForm: FormGroup;
-  fields: any;
+  fields = {};
   dynamicJSON: any;
   questionFormGroup:FormGroup;
   userFormGroup:FormGroup;
-  fieldKeys:any;
+  fieldKeys:any = [];
   docsArr: any;
   items:any;
-  trainJSON: any;
+  trainingJSON: any;
 
   constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router) { }
 
   ngOnInit() {
+    //Grab the selected template from Home Page
     this.homeSer.currentSelectedTemplate.subscribe((res:any)=>{
+      
       if(res.length === 0 || res === undefined){
         this.router.navigate(['home'])
       }
@@ -60,31 +63,23 @@ export class TrainComponent implements OnInit {
       this.selectedTemplate = "1";
       
     })
-  
+    
     this.middleware.getMetaData(this.selectedTemplate).then((data:Metadata)=>{
-      console.log(data)
        this.pdfArr = data.result.templates;
-
-
        this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
-
-      
-      
        this.buildForm(data.result.metadata)
     })
   }
 
   buildForm(formData:any){
-    
+    //Get form fields from JSON response
     this.fields = formData.fields;
-  
 
-    this.fieldKeys = [];
-    let userData = {telephones: ['']}
+    //Build Form fields. If scalar, user FormCtl else FormArray
     const fields = {};
     for(let key in this.fields){
         let type = this.fields[key]["type"];
-        this.fieldKeys.push({name: key, type:type })
+        this.fieldKeys.push({name: key, type:type })// For front end looping
         if(type === "scalar"){
           fields[key] = new FormControl({ value: '', disabled: false});
         }
@@ -92,27 +87,29 @@ export class TrainComponent implements OnInit {
           fields[key] = new FormArray([])
         }
     }
-    
 
+    //Bind the controls created in the above step to the form
     this.userFormGroup = this.formBuilder.group(fields);
 
-
+    //Patch form to set default values
     for(let key in this.fields){
       let type = this.fields[key]["type"];
       if(type === "table"){
-        this.userFormGroup.setControl(key, this.formBuilder.array(userData.telephones))
+        this.userFormGroup.setControl(key, this.formBuilder.array(['']))
       }
     }
- ;
-    this.trainJSON = {"template_id":this.selectedTemplateName,"docs": []};
-   
+
+    //Prepping JSON response to be posted to API
+    this.trainingJSON = {"template_id":this.selectedTemplateName,"docs": []};
   }
 
+  //Method to remove FormArray controls.
   removeItem(name:string,i:number){
     const control = <FormArray>this.userFormGroup.controls[name];
     control.removeAt(i)
   }
 
+  //Method to add FormArray controls
   addItem(name:string): void {
     const control = <FormArray>this.userFormGroup.controls[name];
     control.push(new FormControl())
@@ -122,16 +119,24 @@ export class TrainComponent implements OnInit {
     this.insertEntry(this.currID)
   }
 
- autopopulate(){
-      this.userFormGroup.reset();
-   
-      for(var key in this.userFormGroup.controls){
-        if(this.userFormGroup.controls[key] instanceof FormArray){
-            const formArray = <FormArray>this.userFormGroup.controls[key];
-            formArray.controls=[];
-            formArray.push(new FormControl())
-        }
+  initiliaseFormArray(){
+    for(var key in this.userFormGroup.controls){
+      if(this.userFormGroup.controls[key] instanceof FormArray){
+          const formArray = <FormArray>this.userFormGroup.controls[key];
+          formArray.controls=[];
+          formArray.push(new FormControl())
       }
+    }
+  }
+
+  autopopulate(){
+      //Clear existing Form data
+      this.userFormGroup.reset();
+
+      //Reset FormArray from its prev state
+      this.initiliaseFormArray();
+
+      //Get response for Auto populate
       let response = {"docs": [{
 				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf",
 				"learn": {
@@ -257,6 +262,7 @@ export class TrainComponent implements OnInit {
 				}
 			}
       ]};
+      //Extract JSON for the current form and populate form
       let json = response.docs[this.currID]["learn"];
       this.populateform(json)
   }
@@ -269,61 +275,69 @@ export class TrainComponent implements OnInit {
     this.userFormGroup.reset();
     
     //Remove unused Form Array controls from the form
-    for(var key in this.userFormGroup.controls){
-      if(this.userFormGroup.controls[key] instanceof FormArray){
-          const formArray = <FormArray>this.userFormGroup.controls[key];
-          formArray.controls=[];
-          formArray.push(new FormControl())
-      }
-    }
-
+    this.initiliaseFormArray();
   }
   next(){
     //Save the form content to JSON file and clear unused controls
     this.saveAndClearForm()
+
     //Increment the current id and bind the pdf to PDF viewer
     this.currID += 1;
     if(this.currID <= this.pdfArr.length -1){
       this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
     }
-    this.populateform(this.trainJSON["docs"][this.currID]["learn"])
+
+    //Move on to next form and pre-populate the fields if they exist in final JSON
+    if(this.trainingJSON["docs"][this.currID] !== undefined){
+      this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
+    }
   }
 
   insertEntry(id){
-    this.trainJSON["docs"][id] = { "doc": "" , "learn": {}};
-    this.trainJSON["docs"][id]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
+    //Add keys to the final version of JSON
+    this.trainingJSON["docs"][id] = { "doc": "" , "learn": {}};
+    //Add the PDF template to the final version of JSON
+    this.trainingJSON["docs"][id]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
+
     let scalarValues = {};
     let tabularValues = {};
+    //Group scalar and tabular values seperately
     for(let key in this.userFormGroup.value){
       if(typeof this.userFormGroup.value[key] === 'string'){
+        
         scalarValues[key] = {"type": "field", "value":  this.userFormGroup.value[key] }
       }
       else{
         tabularValues[key] = {"type": "table","values": this.userFormGroup.value[key]}
       }
     }
-    
-    this.trainJSON["docs"][id]["learn"]= {"fields": scalarValues, "table":{
+
+    //Insert the grouped fields into final JSON
+    this.trainingJSON["docs"][id]["learn"]= {"fields": scalarValues, "table":{
       "fields": tabularValues
     }}
   }
 
   populateform(json){
+
       this.userFormGroup.reset();
-      var scalarValues = json["fields"];
-      var tabularValues = json["table"]["fields"];
+
+      var scalarValues = json["fields"];//Grab scalar values
+      var tabularValues = json["table"]["fields"];//Grab table values
+      
+      //Set values of scalar fields
       for(var key in scalarValues){
         this.userFormGroup.controls[key].setValue(scalarValues[key]["value"]);
       }
 
+      //Set values for tabular fields via looping through FormArray
       for(key in tabularValues){
-        let itemArray = tabularValues[key].values;
-        let formArray  = <FormArray>this.userFormGroup.controls[key];
+        let itemArray = tabularValues[key].values;//Grab array values 
+        let formArray  = <FormArray>this.userFormGroup.controls[key];//Grab FormArray for the field
         formArray.controls = [];
+        //Loop and bind valies
         for(let i=0; i<itemArray.length;i++){
-          
           const control = <FormArray>this.userFormGroup.controls[key];
-         
           control.push(new FormControl(itemArray[i]))
         }
       }
@@ -335,8 +349,7 @@ export class TrainComponent implements OnInit {
     if(this.currID <= this.pdfArr.length -1){
         this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
     }
-    this.populateform(this.trainJSON["docs"][this.currID]["learn"])
+    this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
   }
-
 }
    
