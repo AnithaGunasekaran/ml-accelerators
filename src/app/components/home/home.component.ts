@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
   public isAllTemplateSelected = true;
   public checkboxLabel = 'Unselect all';
   errorMessage: string = '';
+  selectedTemplates: any[] = [];
   @ViewChild(ModalComponent) private modal;
 
   constructor(private homeService: HomeService, private router: Router) { }
@@ -30,6 +31,8 @@ export class HomeComponent implements OnInit {
       if (data) {
         this.templates = data['templates'];
         this.checkAllTemplateSelectedOrNot();
+        this.selectedTemplates = this.templates;
+  
       }
     },
     error => {
@@ -50,25 +53,29 @@ export class HomeComponent implements OnInit {
   }
 
   public selectTemplate(template) {
+   
     template.selected = !template.selected;
     this.isAllTemplateSelected = this.templates.every(data => data.selected === true) ? true : false;
+    this.selectedTemplates = Object.values(this.templates).filter((value) => value.selected === true);
   }
 
-  public navigate(page:string, template:any) {
-    console.log(template)
+  public navigate(page:string) {
+    this.selectedTemplates = this.templates.filter((data => data.selected === true));
     if(page === "train"){
+        this.homeService.storeSelectedTemplate(this.selectedTemplates);
         this.router.navigate([page]);
-        this.homeService.storeSelectedTemplate(template)
     }
-    let selectedTemplates = this.templates.filter((data => data.selected === true));//[{"id":2,"name":"Template 2","image":"assets/previews/2.jpg","file":"assets/pdfs/2.pdf","desc":"Praesent eleifend eleifend ante at feugiat."}];
-    this.homeService.storeSelectedTemplates(selectedTemplates);
+    //[{"id":2,"name":"Template 2","image":"assets/previews/2.jpg","file":"assets/pdfs/2.pdf","desc":"Praesent eleifend eleifend ante at feugiat."}];
+    this.homeService.storeSelectedTemplates(this.selectedTemplates);
     this.router.navigate([page]);
   }
 
   public checkAllTemplateSelectedOrNot() {
     if (this.isAllTemplateSelected) {
+      this.selectedTemplates = this.templates;
       this.templates.forEach(data => data.selected = true);
     } else {
+      this.selectedTemplates = [];
       this.templates.forEach(data => data.selected = false);
     }
   }

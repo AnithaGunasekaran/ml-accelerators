@@ -4,12 +4,14 @@
     padding: 5px 10px;
     font-size: 13px;
 }
+[_nghost-c2] .pdfViewer.removePageBorders .page{
+    width: 693px !important;
+}
 .parent{
     display: flex;
     margin-left: 20px;
     margin-right: 20px;
     box-sizing: border-box;
-   
     .preview{
         flex: 1;
         margin-right: 10px;
@@ -23,6 +25,7 @@
         img{
             max-width: 100%;
         }
+        
     }
     .form-container{
         flex: 1;
@@ -59,12 +62,13 @@
                 }
                 .btn-secondary{
                     position: absolute;
-                    left:360px;
+                    left:310px;
                     width: 30px;
                 }
             }
             input[type="text"]{
                 width: 300px;
+                height: 35px;
                 margin-bottom: 10px;
             }
             textarea, input{

@@ -1,7 +1,10 @@
 <h2 class="text-primary">Train {{selectedTemplateName}}</h2>
 <div class="parent">
     <div class="preview">
-        <img src="{{imagePath}}" [@enterAnimation]/>
+        <!-- <img src="{{imagePath}}" [@enterAnimation]/> -->
+        <div style="width: 690px; height: auto">
+            <pdf-viewer style="display: block" [original-size]="false" [src]="pdfSrc" [render-text]="true"></pdf-viewer>
+        </div>
     </div>
     <div class="form-container">
         <div class="form">
@@ -17,19 +20,20 @@
                         <div formArrayName="{{field.name}}">
                             <div *ngFor="let name of userFormGroup.controls[field.name].controls; let i = index">
                                 <input [formControlName]="i" type="text"/>
-                                <button class="btn-secondary" (click)="removeItem(field.name,i)">-</button>
+                                <button class="btn-secondary" *ngIf="i > 0" (click)="removeItem(field.name,i)">-</button>
                             </div>
                             </div>
-                        <button class="btn-primary" (click)="addItem(field.name)">+</button>
+                        <button class="btn-primary"  (click)="addItem(field.name)">+</button>
                     </div>
                 </div>
             </div>
-        <button type="submit"  class="btn-primary" (click)="onSubmit()">Submit</button>
+        <button type="submit"  *ngIf="currID === pdfArr.length - 1" class="btn-primary" (click)="onSubmit()">Submit</button>
         <button class="btn-secondary" (click)="autopopulate()">Auto Populate</button>
      </div>
+   
+    <button class="btn-primary" *ngIf="currID > 0" (click)="prev()"><i class="fa fa-arrow-left" style="font-size: 24px;"></i></button> 
+    <button class="btn-primary"  *ngIf="currID < pdfArr.length - 1" (click)="next()"><i class="fa fa-arrow-right" style="font-size: 24px;"></i></button>
     
-    <button class="btn-primary" (click)="next()">Next</button>
-    <button class="btn-primary" *ngIf="currID > 0" (click)="prev()">Prev</button> 
     </div>
 </div>
 <pre style="text-align: left;">{{trainJSON | json}}</pre>

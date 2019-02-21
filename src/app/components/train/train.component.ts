@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 import { TrainService } from './services/train.service';
 import { environment } from '../../../environments/environment';
 import { Metadata } from './models/metadata';
@@ -36,8 +36,8 @@ export class TrainComponent implements OnInit {
   selectedTemplate:string;
   selectedTemplateName:string;
   currID: number = 0;
-  pdfArr:any;
-  imagePath: string = '';
+  pdfArr:string[] = [];
+  pdfSrc: string = '';
   name: string;
   userForm: FormGroup;
   fields: any;
@@ -49,22 +49,26 @@ export class TrainComponent implements OnInit {
   items:any;
   trainJSON: any;
 
-  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService) { }
+  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router) { }
 
   ngOnInit() {
     this.homeSer.currentSelectedTemplate.subscribe((res:any)=>{
-      console.log("templ",res)
-      this.selectedTemplateName = res.name;
-      this.selectedTemplate = "1"
+      if(res.length === 0 || res === undefined){
+        this.router.navigate(['home'])
+      }
+      this.selectedTemplateName = res[0].name;
+      this.selectedTemplate = "1";
+      
     })
-    console.log(this)
+  
     this.middleware.getMetaData(this.selectedTemplate).then((data:Metadata)=>{
- 
+      console.log(data)
        this.pdfArr = data.result.templates;
 
-     
+
+       this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
+
       
-       this.imagePath = `${environment.public}${this.pdfArr[this.currID].preview}`;
       
        this.buildForm(data.result.metadata)
     })
@@ -73,29 +77,7 @@ export class TrainComponent implements OnInit {
   buildForm(formData:any){
     
     this.fields = formData.fields;
-    // this.fields ={
-    //   "Email":{
-    //     "type":"scalar",
-    //   },
-    //   "PO":{
-    //     "type":"scalar"
-    //   },
-    //   "Address": {
-    //      "type": "scalar",
-    //   },
-    //   "Test Field": {
-    //     "type": "scalar"
-    //   },
-    //   "Item Date": {
-    //      "type": "table",
-    //   },
-    //   "Item No": {
-    //     "type": "table",
-    //  },
-    //   "Material No.": {
-    //       "type": "table",
-    //   }
-    // }
+  
 
     this.fieldKeys = [];
     let userData = {telephones: ['']}
@@ -137,25 +119,8 @@ export class TrainComponent implements OnInit {
   }
 
   onSubmit() {
-    this.trainJSON["docs"][this.currID] = { "doc": "" , "learn": {}};
-    this.trainJSON["docs"][this.currID]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
-    let scalarValues = {};
-    let tabularValues = {};
-    for(let key in this.userFormGroup.value){
-      if(typeof this.userFormGroup.value[key] === 'string'){
-        scalarValues[key] = {"type": "field", "value":  this.userFormGroup.value[key] }
-      }
-      else{
-        tabularValues[key] = {"type": "field","values": this.userFormGroup.value[key]}
-      }
-    }
-   
-    this.trainJSON["docs"][this.currID]["learn"]= {"fields": scalarValues, "table":{
-      "fields": tabularValues
-    }}
-    this.trainJSON = [this.trainJSON]
-    this.userFormGroup.reset();
-}
+    this.insertEntry(this.currID)
+  }
 
  autopopulate(){
       this.userFormGroup.reset();
@@ -170,33 +135,33 @@ export class TrainComponent implements OnInit {
       let response = {"docs": [{
 				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf",
 				"learn": {
-					"fields": {
-						"Email": {
-							"type": "field",
-							"value": "Kslakekwesk;ewm21ectric.com111"
-						},
-						"PO": {
-							"type": "field",
-							"value": "5700339185"
-						},
-						"Address": {
-							"type": "field",
-							"value": "ElSADFSSFSA A/S\nGJDSARISDAAdyvej 19\nO14929321I1421EJ 19\nSDAFSFSAAFASj 19\nDK AFSSARESDA Vejle"
-						}
-					},
-					"table": {
-						"fields": {
-							"Item Date": {
-								"type": "table",
-								"values": ["12.02.2018"]
-							},
-							"Material No.": {
-								"type": "table",
-								"values": ["Mat.nr:1000470830"]
-							}
-						}
-					}
-				}
+          "fields": {
+            "Email": {
+              "type": "field",
+              "value": "Kslakekwesk;ewm21ectric.com"
+            },
+            "PO": {
+              "type": "field",
+              "value": "5700339185"
+            },
+            "Address": {
+              "type": "field",
+              "value": "ElSADFSSFSA A/S\nGJDSARISDAAdyvej 19\nO14929321I1421EJ 19\nSDAFSFSAAFASj 19\nDK AFSSARESDA Vejle"
+            }
+          },
+          "table": {
+            "fields": {
+              "Item Date": {
+                "type": "table",
+                "values": ["12.02.2018"]
+              },
+              "Material No.": {
+                "type": "table",
+                "values": ["Mat.nr:1000470830"]
+              }
+            }
+          }
+        }
 			},
 			{
 				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_2.pdf",
@@ -204,7 +169,7 @@ export class TrainComponent implements OnInit {
 					"fields": {
 						"Email": {
 							"type": "field",
-							"value": "kuSADSDAO0321.scSDAS4tric.com22222"
+							"value": "second email"
 						},
 						"PO": {
 							"type": "field",
@@ -219,11 +184,11 @@ export class TrainComponent implements OnInit {
 						"fields": {
 							"Item Date": {
 								"type": "table",
-								"values": ["13.02.2018", "13.02.2018", "13.02.2018"]
+								"values": ["second date 1", "second date 2", "second date 3"]
 							},
 							"Material No.": {
 								"type": "table",
-								"values": ["Mat.nr:1000601536", "Mat.nr:1000641230", "Mat.nr:1000616210"]
+								"values": ["Mat.nr:12", "Mat.nr:22", "Mat.nr:32"]
 							}
 						}
 					}
@@ -235,7 +200,7 @@ export class TrainComponent implements OnInit {
 					"fields": {
 						"Email": {
 							"type": "field",
-							"value": "kuSADSDAO0321.scSDAS4tric.com33333"
+							"value": "third email"
 						},
 						"PO": {
 							"type": "field",
@@ -250,11 +215,11 @@ export class TrainComponent implements OnInit {
 						"fields": {
 							"Item Date": {
 								"type": "table",
-								"values": ["13.02.2018", "13.02.2018", "13.02.2018"]
+								"values": ["third date 1","third date 2"]
 							},
 							"Material No.": {
 								"type": "table",
-								"values": ["Mat.nr:1000601536", "Mat.nr:1000641230", "Mat.nr:1000616210"]
+								"values": ["Mat.nr:13", "Mat.nr:23"]
 							}
 						}
 					}
@@ -293,27 +258,40 @@ export class TrainComponent implements OnInit {
 			}
       ]};
       let json = response.docs[this.currID]["learn"];
-      var scalarValues = json["fields"];
-      var tabularValues = json["table"]["fields"];
-      for(var key in scalarValues){
-        this.userFormGroup.controls[key].setValue(scalarValues[key]["value"]);
-      }
+      this.populateform(json)
+  }
 
-      for(key in tabularValues){
-        let itemArray = tabularValues[key].values;
-        let formArray  = <FormArray>this.userFormGroup.controls[key];
-        let firstControl = <FormControl>formArray.controls[0];
-        firstControl.setValue(itemArray[0])
-       
-        for(let i=1; i<itemArray.length;i++){
-          const control = <FormArray>this.userFormGroup.controls[key];
-          control.push(new FormControl(itemArray[i]))
-        }
+  saveAndClearForm(){
+    //Add current form details to train JSON
+    this.insertEntry(this.currID);
+
+    //Reset form
+    this.userFormGroup.reset();
+    
+    //Remove unused Form Array controls from the form
+    for(var key in this.userFormGroup.controls){
+      if(this.userFormGroup.controls[key] instanceof FormArray){
+          const formArray = <FormArray>this.userFormGroup.controls[key];
+          formArray.controls=[];
+          formArray.push(new FormControl())
       }
+    }
+
   }
   next(){
-    this.trainJSON["docs"][this.currID] = { "doc": "" , "learn": {}};
-    this.trainJSON["docs"][this.currID]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
+    //Save the form content to JSON file and clear unused controls
+    this.saveAndClearForm()
+    //Increment the current id and bind the pdf to PDF viewer
+    this.currID += 1;
+    if(this.currID <= this.pdfArr.length -1){
+      this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
+    }
+    this.populateform(this.trainJSON["docs"][this.currID]["learn"])
+  }
+
+  insertEntry(id){
+    this.trainJSON["docs"][id] = { "doc": "" , "learn": {}};
+    this.trainJSON["docs"][id]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
     let scalarValues = {};
     let tabularValues = {};
     for(let key in this.userFormGroup.value){
@@ -324,30 +302,40 @@ export class TrainComponent implements OnInit {
         tabularValues[key] = {"type": "table","values": this.userFormGroup.value[key]}
       }
     }
-   
-    this.trainJSON["docs"][this.currID]["learn"]= {"fields": scalarValues, "table":{
+    
+    this.trainJSON["docs"][id]["learn"]= {"fields": scalarValues, "table":{
       "fields": tabularValues
     }}
-    this.userFormGroup.reset();
-   
-    for(var key in this.userFormGroup.controls){
-      if(this.userFormGroup.controls[key] instanceof FormArray){
-          const formArray = <FormArray>this.userFormGroup.controls[key];
-          formArray.controls=[];
-          formArray.push(new FormControl())
+  }
+
+  populateform(json){
+      this.userFormGroup.reset();
+      var scalarValues = json["fields"];
+      var tabularValues = json["table"]["fields"];
+      for(var key in scalarValues){
+        this.userFormGroup.controls[key].setValue(scalarValues[key]["value"]);
       }
-    }
-    this.currID += 1;
-    console.log("Preview ",this.pdfArr[this.currID].preview)
-    if(this.currID <= this.pdfArr.length -1){
-      this.imagePath = `${environment.public}${this.pdfArr[this.currID].preview}`;
-    }
+
+      for(key in tabularValues){
+        let itemArray = tabularValues[key].values;
+        let formArray  = <FormArray>this.userFormGroup.controls[key];
+        formArray.controls = [];
+        for(let i=0; i<itemArray.length;i++){
+          
+          const control = <FormArray>this.userFormGroup.controls[key];
+         
+          control.push(new FormControl(itemArray[i]))
+        }
+      }
   }
 
   prev(){
+    this.saveAndClearForm();
     this.currID--;
-    console.log(this.currID)
-   
+    if(this.currID <= this.pdfArr.length -1){
+        this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
+    }
+    this.populateform(this.trainJSON["docs"][this.currID]["learn"])
   }
 
 }

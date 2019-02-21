@@ -17,7 +17,7 @@ body{
                 div{
                     &.left{
                         background: white; -webkit-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
-                            -moz-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
+                        -moz-box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);
                         box-shadow: 10px 10px 22px -10px rgba(0,0,0,0.75);  border-radius: 5px; 
                         border: solid  1px #DADADA;  width: 98%; box-sizing: border-box; margin-right: 1.5%
                     }
@@ -142,7 +142,7 @@ body{
                 .plusButton{
                     position: absolute;
                     top: 3px;
-                    left: -7px;
+                    left: -17px;
                    
                     .ui-button {
                         font-size: 8px;
