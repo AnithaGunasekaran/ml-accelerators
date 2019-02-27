@@ -1,4 +1,4 @@
-<p-dialog header={{previewedTemplate.name}} [(visible)]="display" [modal]="true" [responsive]="true"  [style.min-height.px]="imageH"  [maximizable]="true" [baseZIndex]="10000" [blockScroll]="true" [positionTop]="0">
+<p-dialog header="{{previewedTemplate.name}}" [(visible)]="display" [modal]="true" [responsive]="true"  [style.min-height.px]="imageH"  [maximizable]="true" [baseZIndex]="10000" [blockScroll]="true" [positionTop]="0">
   <!-- <app-pdf-viewer pdfSrc="https://ml-endpointv1.firebaseapp.com/{{previewedTemplate.file}}"></app-pdf-viewer> -->
-  <img [style.height.px]="imageH-100" clas="preview" width="auto" src="https://ml-endpointv1.firebaseapp.com/{{previewedTemplate.image}}">
+  <img [style.height.px]="imageH-100" clas="preview" width="auto" [src]="previewedTemplate.image">
 </p-dialog>

@@ -22,7 +22,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { TrainComponent } from './components/train/train.component';
-
+import {ProgressBarModule} from 'primeng/progressbar';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,6 +44,7 @@ import { TrainComponent } from './components/train/train.component';
     HttpClientModule,
     AppRoutingModule,
     TableModule,
+    AngularFireModule.initializeApp(environment.firebase),
     PdfViewerModule,
     DialogModule,
     NgbModule,
@@ -49,7 +52,9 @@ import { TrainComponent } from './components/train/train.component';
     ButtonModule,
     TooltipModule,
     CheckboxModule,
-    CardModule
+    CardModule,
+    ProgressBarModule
+    
   ],
   providers: [],
   bootstrap: [AppComponent]

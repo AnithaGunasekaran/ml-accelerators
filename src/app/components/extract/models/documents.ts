@@ -1,9 +1,10 @@
 export class Documents {
     id: string;
-    name: string;
+    file_name: string;
     link: string;
-    client: string;
+    template_name: string;
     status: string;
     json: string;
     preview: string;
+    pdfLink: string
 }

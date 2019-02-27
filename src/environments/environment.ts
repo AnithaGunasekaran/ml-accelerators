@@ -4,9 +4,19 @@
 
 export const environment = {
   production: false,
-  apiEndPoint: 'http://localhost:5000/api',
-  public:'https://ml-endpointv1.firebaseapp.com/'
+  usecaseId: "1",
+  apiEndPoint: 'http://localhost:5000/api/v1',
+  public:'https://ml-endpointv1.firebaseapp.com/',
+  firebase: {
+    apiKey: 'AIzaSyDP7ulefaLJ8fz5MXZZkoD9FzN5h6MI7sQ',
+    authDomain: 'ml-acc.firebaseapp.com',
+    databaseURL: 'https://ml-acc.firebaseio.com',
+    projectId: 'ml-acc',
+    storageBucket: 'ml-acc.appspot.com',
+    messagingSenderId: '529743086184'
+  }
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

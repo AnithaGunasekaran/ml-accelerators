@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { DomSanitizer } from '@angular/platform-browser';
 import { HomeService } from './services/home.service';
 import { ModalComponent } from './modal/modal.component';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -20,19 +21,23 @@ export class HomeComponent implements OnInit {
   selectedTemplates: any[] = [];
   @ViewChild(ModalComponent) private modal;
 
-  constructor(private homeService: HomeService, private router: Router) { }
+  constructor(private homeService: HomeService, private router: Router, private sanitizer:DomSanitizer) { }
 
   ngOnInit() {
     this.getTemplateData();
+
+    
   }
 
   private getTemplateData() {
-    this.homeService.getTemplateData().subscribe((data) => {
+    this.homeService.getTemplateData(environment.usecaseId).then((data) => {
       if (data) {
         this.templates = data['templates'];
+       
+    
         this.checkAllTemplateSelectedOrNot();
         this.selectedTemplates = this.templates;
-  
+        this.getImages();
       }
     },
     error => {
@@ -42,18 +47,49 @@ export class HomeComponent implements OnInit {
     // this.templates = this.homeService.getTeplateData();
   }
 
+  private getImages(){
+     
+    var imagesArr = [];
+    this.templates.map((item, index)=>{
+
+      imagesArr.push(this.homeService.getImage(environment.usecaseId,item.name).then((res:any)=>{
+          console.log(res)
+          let unsafeImageUrl = window.URL.createObjectURL(res);
+          item.image = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
+      }).catch((err)=>{
+        console.log(err)
+        this.errorMessage = "Cannot retrieve image for certain templates";
+      }))
+    })
+
+      Promise.all(imagesArr).then((data)=>{
+        console.log("Data", data)
+      }).catch((err)=>{
+          console.log(err)
+      }).finally(()=>{
+        this.selectedTemplates = this.templates;
+    });
+
+}
+
+ 
+
   public showTemplatePreview(template) {
     if(template !== null){
-      this.modal.previewedTemplate = template;
+     
+      this.homeService.getImage(environment.usecaseId,template.name).then((res:any)=>{
+        console.log(res)
+        let unsafeImageUrl = window.URL.createObjectURL(res);
+        this.modal.previewedTemplate.image = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
+      }).catch((err)=>{
+        console.log(err)
+        this.errorMessage = "Cannot retrieve image for certain templates";
+      });
       this.modal.display = true;
-    }
-    else{
-      //Log error to a file
     }
   }
 
   public selectTemplate(template) {
-   
     template.selected = !template.selected;
     this.isAllTemplateSelected = this.templates.every(data => data.selected === true) ? true : false;
     this.selectedTemplates = Object.values(this.templates).filter((value) => value.selected === true);
@@ -65,7 +101,6 @@ export class HomeComponent implements OnInit {
         this.homeService.storeSelectedTemplate(this.selectedTemplates);
         this.router.navigate([page]);
     }
-    //[{"id":2,"name":"Template 2","image":"assets/previews/2.jpg","file":"assets/pdfs/2.pdf","desc":"Praesent eleifend eleifend ante at feugiat."}];
     this.homeService.storeSelectedTemplates(this.selectedTemplates);
     this.router.navigate([page]);
   }

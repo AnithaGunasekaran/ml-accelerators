@@ -31,6 +31,7 @@ export class ExtractComponent implements OnInit {
 
   docsArray:Documents[] = [];
   pdfSrc:any ;
+  isLoading: Boolean = false;
   display: boolean = false;
   showExtract: boolean = false;
   isFetching: boolean = true;
@@ -56,11 +57,13 @@ export class ExtractComponent implements OnInit {
         this.router.navigate(['home']);
       }
       var pArr = []; let failedPromises = [];
+      this.isLoading = true;
       this.selectedTemplates.map((item:any)=>{
-          pArr.push(this.apiService.fetchFiles(item.id).then((res:any)=>{
+          pArr.push(this.apiService.fetchFiles(environment.usecaseId,item.name).then((res:any)=>{
+              console.log(res)
               if(res.code === 200){
                   res.result.map((items) => {
-                    this.docsArray.push(Object.assign(items, {status: "Not started"}, {json:''}, {pdfLink:  `<a target="_blanxk" href="${environment.public}${items.link}">${items.name}</a>`}))
+                    this.docsArray.push(Object.assign(items, {status: "Not started"}, {json:''}, {pdfLink: items.name}))
                   });
               }
               else{
@@ -70,7 +73,7 @@ export class ExtractComponent implements OnInit {
              failedPromises.push(err)
           }));
       });
-      Promise.all(pArr).then((data)=>{
+      Promise.all(pArr).then(()=>{
         console.log(failedPromises)
         let serverErr = failedPromises.filter((item) =>{
           return item.status >= 400 || item.status <= 500
@@ -88,35 +91,44 @@ export class ExtractComponent implements OnInit {
             this.errorMessage = `Documents matching templates - ${templateNames} cannot be retrieved`;
           }
         }
-        this.total = this.docsArray.length;
-        this.isFetching = false;
-        this.showExtract = true;
-      }).catch((err)=>{
-        this.isFetching = false;
-        this.total = this.docsArray.length;
-        this.showExtract = true;
+      }).catch(()=>{
         this.errorMessage = "Unable to fetch documents matching certain templates(s). Please try again later";
+      }).finally(()=>{
+         this.total = this.docsArray.length;
+         this.showExtract = true;
+         this.isFetching = false;
+         this.isLoading = false;
       });
   }
 
+  openPDF(templateName,itemName){
+    this.apiService.fetchPDF(environment.usecaseId,templateName,itemName).then((res:any)=>{
+      const fileURL = URL.createObjectURL(res);
+      window.open(fileURL, '_blank');
+     })
+   }
+
+  
+
   extractJSON(){
+      this.isLoading = true;
       var timerId = setInterval(()=>{
         if(!this.stopClock){
-            this.processingTime +=0.5;
+            this.processingTime +=1;
         }
         else{
           clearInterval(timerId);
         }
-      },500);
+      },1000);
       this.total = this.docsArray.length;
       this.extractText = "Extracting...";
       this.disableExtract = true;
       var extractArr = [];
       this.docsArray.map((item, index)=>{
         item.status = "In progress"
-        extractArr.push(this.apiService.extractJSON(item.id).then((res)=>{
+        extractArr.push(this.apiService.extractJSON(environment.usecaseId,item.template_name, item.file_name).then((res)=>{
             if(res.code == 200){
-              item.status = `${item.id} - Completed`;
+              item.status = `Completed`;
               item.json = res.result; 
               this.show = 'show';
               this.processedFiles++;
@@ -136,7 +148,9 @@ export class ExtractComponent implements OnInit {
         this.disableExtract = true;
       }).catch((err)=>{
           console.log(err)
-      });
+      }).finally(()=>{
+        this.isLoading = false;
+     });;
   }
 
   formatJSON(json,className){
@@ -184,8 +198,11 @@ export class ExtractComponent implements OnInit {
     this.imageH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 100;
     if(doc.json !== ""){
       this.display = true;
-      this.pdfSrc = `${environment.public}${doc.preview}`;
       this.jsonHTML = this.formatJSON(doc.json,"jsonTable");
+      this.apiService.fetchPDF(environment.usecaseId,"1","1").then((res:any)=>{
+        const fileURL = URL.createObjectURL(res);
+        this.pdfSrc = fileURL;
+      })
     }
   }
 }

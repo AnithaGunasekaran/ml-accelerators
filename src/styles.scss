@@ -1,5 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
-body{
+body, html{
     background: #faf9fd;
     color: #111111;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    font-family: 'Raleway', sans-serif;
+}
+body .ui-progressbar{
+    position: fixed;
+    display: block;
+    background: transparent;
+    height: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+    border: none;
+    top: 0;
+}
+h2{
+    margin-top: 20px;
+}
+body .ui-progressbar .ui-progressbar-value{
+    background: #007bff;
 }

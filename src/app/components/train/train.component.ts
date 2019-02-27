@@ -6,6 +6,7 @@ import { Metadata } from './models/metadata';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { HomeService } from '../home/services/home.service';
+import { TemplatesService } from '../extract/services/templates.service'; 
 
 export interface SelectedTemplate{
   name:string,
@@ -36,37 +37,62 @@ export class TrainComponent implements OnInit {
   selectedTemplate:string;
   selectedTemplateName:string;
   currID: number = 0;
-  pdfArr:string[] = [];
+  pdfArr:any = [];
+  isLoading: Boolean = false;
   pdfSrc: string = '';
-  name: string;
-  userForm: FormGroup;
+  errorMessage: string = '';
   fields = {};
   dynamicJSON: any;
-  questionFormGroup:FormGroup;
-  userFormGroup:FormGroup;
+  trainFormGroup:FormGroup;
   fieldKeys:any = [];
-  docsArr: any;
   items:any;
   trainingJSON: any;
 
-  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router) { }
+  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router, private templateService:TemplatesService) { }
 
   ngOnInit() {
     //Grab the selected template from Home Page
     this.homeSer.currentSelectedTemplate.subscribe((res:any)=>{
       
-      if(res.length === 0 || res === undefined){
-        this.router.navigate(['home'])
-      }
-      this.selectedTemplateName = res[0].name;
+      // if(res.length === 0 || res === undefined){
+      //   this.router.navigate(['home'])
+      // }
+      this.selectedTemplateName = "Template 1"//res[0].name;
       this.selectedTemplate = "1";
       
     })
+    this.isLoading = true;
+    this.middleware.getMetaData(environment.usecaseId,this.selectedTemplateName).then((data:Metadata)=>{
+      
+       if(data.code !== 200){
+          throw new Error();
+       }
+      // this.pdfArr = data.result.templates;
+       //this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
+       this.buildForm(data.result);
+      
+    }).catch((err)=>{
+        this.errorMessage = `Unable to fetch matadata matching the template - ${this.selectedTemplateName}`;
+    }).finally(()=>{
+      this.isLoading = false;
+    })
+
+    this.middleware.getTrainingPdfs(environment.usecaseId,this.selectedTemplateName).then((res:any)=>{
+      this.pdfArr = res.result;
     
-    this.middleware.getMetaData(this.selectedTemplate).then((data:Metadata)=>{
-       this.pdfArr = data.result.templates;
-       this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
-       this.buildForm(data.result.metadata)
+      this.fetchPDF(this.selectedTemplateName,this.pdfArr[0].file_name)
+    }).catch((err)=>{
+      this.errorMessage = `Unable to fetch matadata matching the template - ${this.selectedTemplateName}`;
+    }).finally(()=>{
+      this.isLoading = false;
+    })
+  }
+
+  fetchPDF(templateName, fileName){
+    
+    this.templateService.fetchPDF(environment.usecaseId, templateName, fileName).then((res:any)=>{
+      const fileURL = URL.createObjectURL(res);
+      this.pdfSrc = fileURL;
     })
   }
 
@@ -88,13 +114,13 @@ export class TrainComponent implements OnInit {
     }
 
     //Bind the controls created in the above step to the form
-    this.userFormGroup = this.formBuilder.group(fields);
+    this.trainFormGroup = this.formBuilder.group(fields);
 
     //Patch form to set default values
     for(let key in this.fields){
       let type = this.fields[key]["type"];
       if(type === "table"){
-        this.userFormGroup.setControl(key, this.formBuilder.array(['']))
+        this.trainFormGroup.setControl(key, this.formBuilder.array(['']))
       }
     }
 
@@ -104,24 +130,28 @@ export class TrainComponent implements OnInit {
 
   //Method to remove FormArray controls.
   removeItem(name:string,i:number){
-    const control = <FormArray>this.userFormGroup.controls[name];
+    const control = <FormArray>this.trainFormGroup.controls[name];
     control.removeAt(i)
   }
 
   //Method to add FormArray controls
   addItem(name:string): void {
-    const control = <FormArray>this.userFormGroup.controls[name];
+    const control = <FormArray>this.trainFormGroup.controls[name];
     control.push(new FormControl())
   }
 
   onSubmit() {
-    this.insertEntry(this.currID)
+    this.insertEntry(this.currID);
+    this.middleware.postTrainModel(environment.usecaseId,this.selectedTemplateName,this.trainingJSON).then((res:any)=>{
+      console.log(res)
+    });
   }
 
   initiliaseFormArray(){
-    for(var key in this.userFormGroup.controls){
-      if(this.userFormGroup.controls[key] instanceof FormArray){
-          const formArray = <FormArray>this.userFormGroup.controls[key];
+    for(var key in this.trainFormGroup.controls){
+    
+      if(this.trainFormGroup.controls[key] instanceof FormArray){
+          const formArray = <FormArray>this.trainFormGroup.controls[key];
           formArray.controls=[];
           formArray.push(new FormControl())
       }
@@ -129,141 +159,26 @@ export class TrainComponent implements OnInit {
   }
 
   autopopulate(){
+      this.isLoading = true;
       //Clear existing Form data
-      this.userFormGroup.reset();
+      this.trainFormGroup.reset();
 
       //Reset FormArray from its prev state
       this.initiliaseFormArray();
 
       //Get response for Auto populate
-      let response = {"docs": [{
-				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf",
-				"learn": {
-          "fields": {
-            "Email": {
-              "type": "field",
-              "value": "Kslakekwesk;ewm21ectric.com"
-            },
-            "PO": {
-              "type": "field",
-              "value": "5700339185"
-            },
-            "Address": {
-              "type": "field",
-              "value": "ElSADFSSFSA A/S\nGJDSARISDAAdyvej 19\nO14929321I1421EJ 19\nSDAFSFSAAFASj 19\nDK AFSSARESDA Vejle"
-            }
-          },
-          "table": {
-            "fields": {
-              "Item Date": {
-                "type": "table",
-                "values": ["12.02.2018"]
-              },
-              "Material No.": {
-                "type": "table",
-                "values": ["Mat.nr:1000470830"]
-              }
-            }
-          }
+      this.middleware.getAutoPopulate(environment.usecaseId,this.selectedTemplate).then((res:any)=>{
+        console.log(res)
+        if(res.code !== 200){
+          throw new Error('Cannot locate the data')
         }
-			},
-			{
-				"doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_2.pdf",
-				"learn": {
-					"fields": {
-						"Email": {
-							"type": "field",
-							"value": "second email"
-						},
-						"PO": {
-							"type": "field",
-							"value": "LOP0128H12"
-						},
-						"Address": {
-							"type": "field",
-							"value": "J-WEQWEWQustri I/S\nMo312131264\nInd23123412ivej 28\nDSDASDA3134ed"
-						}
-					},
-					"table": {
-						"fields": {
-							"Item Date": {
-								"type": "table",
-								"values": ["second date 1", "second date 2", "second date 3"]
-							},
-							"Material No.": {
-								"type": "table",
-								"values": ["Mat.nr:12", "Mat.nr:22", "Mat.nr:32"]
-							}
-						}
-					}
-				}
-			},
-			{
-        "doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_3.pdf",
-        "learn": {
-					"fields": {
-						"Email": {
-							"type": "field",
-							"value": "third email"
-						},
-						"PO": {
-							"type": "field",
-							"value": "LOP0128H12"
-						},
-						"Address": {
-							"type": "field",
-							"value": "J-WEQWEWQustri I/S\nMo312131264\nInd23123412ivej 28\nDSDASDA3134ed"
-						}
-					},
-					"table": {
-						"fields": {
-							"Item Date": {
-								"type": "table",
-								"values": ["third date 1","third date 2"]
-							},
-							"Material No.": {
-								"type": "table",
-								"values": ["Mat.nr:13", "Mat.nr:23"]
-							}
-						}
-					}
-				}
-			},
-			{
-        "doc": "/Users/ravitejagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_4.pdf",
-        "learn": {
-					"fields": {
-						"Email": {
-							"type": "field",
-							"value": "kuSADSDAO0321.scSDAS4tric.com444"
-						},
-						"PO": {
-							"type": "field",
-							"value": "LOP0128H12"
-						},
-						"Address": {
-							"type": "field",
-							"value": "J-WEQWEWQustri I/S\nMo312131264\nInd23123412ivej 28\nDSDASDA3134ed"
-						}
-					},
-					"table": {
-						"fields": {
-							"Item Date": {
-								"type": "table",
-								"values": ["13.02.2018", "13.02.2018", "13.02.2018"]
-							},
-							"Material No.": {
-								"type": "table",
-								"values": ["Mat.nr:1000601536", "Mat.nr:1000641230", "Mat.nr:1000616210"]
-							}
-						}
-					}
-				}
-			}
-      ]};
-      //Extract JSON for the current form and populate form
-      let json = response.docs[this.currID]["learn"];
-      this.populateform(json)
+        let json = res.result.docs[this.currID]["learn"];
+        this.populateform(json)
+      }).catch((err)=>{
+        this.errorMessage = `Unable to fetch data matching the template - ${this.selectedTemplateName}`;
+      }).finally(()=>{
+        this.isLoading = false;
+      }); 
   }
 
   saveAndClearForm(){
@@ -271,20 +186,20 @@ export class TrainComponent implements OnInit {
     this.insertEntry(this.currID);
 
     //Reset form
-    this.userFormGroup.reset();
+    this.trainFormGroup.reset();
     
     //Remove unused Form Array controls from the form
     this.initiliaseFormArray();
   }
   next(){
+  
     //Save the form content to JSON file and clear unused controls
     this.saveAndClearForm()
 
     //Increment the current id and bind the pdf to PDF viewer
     this.currID += 1;
-    if(this.currID <= this.pdfArr.length -1){
-      this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
-    }
+
+    this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
 
     //Move on to next form and pre-populate the fields if they exist in final JSON
     if(this.trainingJSON["docs"][this.currID] !== undefined){
@@ -292,22 +207,27 @@ export class TrainComponent implements OnInit {
     }
   }
 
+
   insertEntry(id){
     //Add keys to the final version of JSON
     this.trainingJSON["docs"][id] = { "doc": "" , "learn": {}};
     //Add the PDF template to the final version of JSON
-    this.trainingJSON["docs"][id]["doc"] = '/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
+    this.trainingJSON["docs"][id]["doc"] = this.pdfArr[id].file_name;//'/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
 
     let scalarValues = {};
     let tabularValues = {};
-    //Group scalar and tabular values seperately
-    for(let key in this.userFormGroup.value){
-      if(typeof this.userFormGroup.value[key] === 'string'){
-        
-        scalarValues[key] = {"type": "field", "value":  this.userFormGroup.value[key] }
+    
+    //Group scalar and tabular values seperately. Insert the key value pair only if the value is not empty
+    for(let key in this.trainFormGroup.value){
+      if(typeof this.trainFormGroup.value[key] === 'string' && this.trainFormGroup.value[key] !== ''){
+        scalarValues[key] = {"type": "field", "value":  this.trainFormGroup.value[key] }
       }
-      else{
-        tabularValues[key] = {"type": "table","values": this.userFormGroup.value[key]}
+      else if(typeof this.trainFormGroup.value[key] === 'object' && this.trainFormGroup.value[key] !== null ) {
+        let valueArr = this.trainFormGroup.value[key];
+        //Check if the entire array is empty. If not insert the key and array into JSON
+        if(!(valueArr.length === valueArr.filter((item) =>  (item === null || item === '')).length)){
+          tabularValues[key] = {"type": "table","values": this.trainFormGroup.value[key]}
+        }
       }
     }
 
@@ -319,36 +239,38 @@ export class TrainComponent implements OnInit {
 
   populateform(json){
 
-      this.userFormGroup.reset();
+      this.trainFormGroup.reset();
 
       var scalarValues = json["fields"];//Grab scalar values
       var tabularValues = json["table"]["fields"];//Grab table values
       
       //Set values of scalar fields
       for(var key in scalarValues){
-        this.userFormGroup.controls[key].setValue(scalarValues[key]["value"]);
+        this.trainFormGroup.controls[key].setValue(scalarValues[key]["value"]);
       }
 
-      //Set values for tabular fields via looping through FormArray
+      // //Set values for tabular fields via looping through FormArray
       for(key in tabularValues){
         let itemArray = tabularValues[key].values;//Grab array values 
-        let formArray  = <FormArray>this.userFormGroup.controls[key];//Grab FormArray for the field
+        let formArray  = <FormArray>this.trainFormGroup.controls[key];//Grab FormArray for the field
         formArray.controls = [];
-        //Loop and bind valies
-        for(let i=0; i<itemArray.length;i++){
-          const control = <FormArray>this.userFormGroup.controls[key];
-          control.push(new FormControl(itemArray[i]))
+        //Loop and bind values
+        if(itemArray !== undefined){
+          for(let i=0; i<itemArray.length;i++){
+            const control = <FormArray>this.trainFormGroup.controls[key];
+            control.push(new FormControl(itemArray[i]))
+          }
         }
       }
   }
 
   prev(){
     this.saveAndClearForm();
+
     this.currID--;
-    if(this.currID <= this.pdfArr.length -1){
-        this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
-    }
+    
+    this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
+   
     this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
   }
 }
-   

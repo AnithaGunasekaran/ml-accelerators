@@ -30,9 +30,18 @@ export class HomeService {
   constructor(private httpClient: HttpClient) {
   }
 
-  public getTemplateData() {
-    // return this.templates;
-    return this.httpClient.get(`${this.endPoint}/templates`);
+  public getTemplateData(usecaseId:string) {
+    let params = {'use_case_id': usecaseId};
+    return this.httpClient.get(`${this.endPoint}/getTemplates`, {params: params}).toPromise()
+    .then(res => res)
+    .then(data => { return data; });
+  }
+
+  public getImage(usecaseId:string, templateName:string){
+    let params = { "use_case_id" : usecaseId, 'template_name': templateName}
+    return this.httpClient.get(`${this.endPoint}/getImage`, {params: params,  responseType: "blob"}).toPromise()
+    .then(res => res)
+    .then(data => { return data; });
   }
 
   public storeSelectedTemplates(templates) {

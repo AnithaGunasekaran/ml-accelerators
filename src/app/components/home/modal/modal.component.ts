@@ -9,16 +9,15 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 export class ModalComponent implements OnInit {
 
   display = false;
-  previewedTemplate = {};
+  previewedTemplate:any = {};
   imageH : number = 0;
   constructor() { 
-    
+    console.log(this.previewedTemplate)
   }
 
   ngOnInit() {
-   
-    this.imageH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)+10;
-  
+    
+    this.imageH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
   }
 
 }

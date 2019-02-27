@@ -1,4 +1,5 @@
 
+<p-progressBar *ngIf="isLoading === true" mode="indeterminate"></p-progressBar>
 <div class="container">
     <h2 class="text-primary">Fetch Documents</h2>
     <div *ngIf="errorMessage !== ''"  [@enterAnimation] class="alert alert-danger" role="alert">
@@ -15,12 +16,12 @@
     <div *ngIf="showExtract">
         <button [disabled]="disableExtract" class="btn btn-primary" (click)='extractJSON()'>{{extractText}}</button>
     </div>
-        
     <p-dialog [(visible)]="display" [modal]="true" [positionTop]="0" [maximizable]="true" [style]="{width: '100%'}">
-        <div class="content" [style.min-height.px]="imageH+100">
-            <div style="flex: 0.75">
-                <div  [style.min-height.px]="imageH" class="left">
-                    <img src={{pdfSrc}} width="auto" height="{{imageH}}"/>
+        <div class="content" [style.min-height.px]="imageH+50">
+            <div style="flex: 1">
+                <div  [style.height.px]="imageH" class="left">
+                    <!-- <img src={{pdfSrc}} width="auto" height="{{imageH}}"/> -->
+                    <pdf-viewer [style.height.px]="imageH" style="display: block; overflow: scroll; width: 670px" [original-size]="false" [src]="pdfSrc" [render-text]="true"></pdf-viewer>
                 </div>
             </div>
             <div style="flex: 1; overflow: auto;">
@@ -46,28 +47,18 @@
         <tr [ngClass]="'row'">
             <td hidden>{{file.id}}</td>
             <td hidden>{{file.preview}}</td>
-            <td valign="center" class="client">{{file.client}}</td>
-            <td valign="center" class="name" innerHTML="{{file.name}}"></td>
+            <td valign="center" class="client">{{file.template_name}}</td>
+            <td valign="center" class="name" (click)="openPDF(file.template_name,file.file_name)">
+                {{file.file_name}}
+            </td>
             <td valign="center" class="status" [class.loading]="file.status === 'In progress'"
             [class.error]="file.status === 'Unable to fetch data'">{{file.status}}</td>
             <td valign="top" class="resultcell" [ngClass]="file.json === '' ? 'hide': 'show' " (click)="open(file)">
                 <div innerHTML='{{formatJSON(file.json, "resultTable")}}'></div>
                 <p-button class="plusButton" icon="pi pi-plus" (onClick)="open(file)"></p-button>
-
             </td>
         </tr>
     </ng-template>
     </p-table>
     
 </div>
-
- <!-- <div>
-              <div [ngStyle]="{height:'300px', display: 'block', width: '50%', float: 'left'}">
-                   <div innerHTML="{{jsonHTML}}"></div>
-              </div>
-              <div [ngStyle]="{height:'700px',  display: 'block', width: '50%', float: 'right'}">
-                    <pdf-viewer [src]="'https://ml-endpointv1.firebaseapp.com/assets/pdfs/1.pdf'" 
-                               
-                    ></pdf-viewer>
-              </div>
-          </div> -->

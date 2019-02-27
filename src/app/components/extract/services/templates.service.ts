@@ -17,15 +17,24 @@ export class TemplatesService {
       return this.httpClient.get(`${this.apiEndPoint}/templates`);
    }
 
-   public fetchFiles(clientId:string){
-      return this.httpClient.get(`${this.apiEndPoint}/templates/${clientId}`).toPromise()
+   public fetchFiles(usecaseId:string, templateName:string){
+      let params:any = {'use_case_id': usecaseId, 'template_name': templateName}
+      return this.httpClient.get(`${this.apiEndPoint}/getTemplates`, {params: params}).toPromise()
       .then(res =><Documents[]> res )
       .then(data => {  return data; });
    }
 
-   public extractJSON(id:string){
-      return this.httpClient.get(`${this.apiEndPoint}/documents/${id}`).toPromise()
+   public extractJSON(usecaseId:string,templateName:string,pdfName:string){
+      let params:any = {'use_case_id': usecaseId, 'template_name': templateName, 'pdf_name': pdfName}
+      return this.httpClient.get(`${this.apiEndPoint}/extractData`, {params: params}).toPromise()
       .then(res => <JSONResponse> res)
       .then(data => {  return data; });
+   }
+  
+   public fetchPDF(usecaseId:string, templateName:string, pdfName: string){
+      let params = { "use_case_id" : usecaseId, 'template_name': templateName, 'pdf_name': pdfName}
+      return this.httpClient.get(`${this.apiEndPoint}/getPdf`, {params: params,  responseType: "blob"}).toPromise()
+      .then(res => res)
+      .then(data => { return data; });
    }
 }

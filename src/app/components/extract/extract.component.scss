@@ -11,7 +11,6 @@ body{
             border: none;
             padding: 0 25px;
             overflow: scroll;
-            
             .content{
                 display: flex;
                 div{
@@ -47,11 +46,13 @@ body{
 [_nghost-c3] .pdfViewer.removePageBorders .page{
     margin-bottom: 200px !important;
 }
+.ui-dialog .ui-dialog-titlebar-icon span.pi-window-maximize{
+    display: none;
+}
 
  .container{
     max-width: 95%;
-    margin: 10px auto;
-    font-family: 'Raleway', sans-serif;
+    margin: 0 auto;
     
     h1{
         color: #FFF;
@@ -141,9 +142,11 @@ body{
                 }
                 .plusButton{
                     position: absolute;
-                    top: 3px;
-                    left: -17px;
-                   
+                    top: 5px;
+                    left: -10px;
+                    button{
+                        margin-top: 0;
+                    }
                     .ui-button {
                         font-size: 8px;
                         background-color: rgba(0,0,0,0.6);
@@ -240,47 +243,4 @@ body{
         }
         
     }
-    
-    // .rowHeader{
-    //     th{
-    //         padding: 10px 20px;
-    //         text-align: center;
-    //         .name{
-    //             max-width: 20%
-    //         }
-    //         .id{
-    //             max-width: 10%;
-    //         }
-    //         .status{
-    //             max-width: 30%
-    //         }
-    //         .result{
-    //             max-width: 40%;
-    //         }
-    //     }
-    // }
-    // .row{
-      
-    //     font-size: 14px;
-    //     color: #666;
-    //     line-height: 1.2;
-    //     font-weight: unset!important;
-    //     padding-top: 20px;
-    //     padding-bottom: 20px;
-       
-    //     td{
-    //         padding: 10px 20px; 
-    //         border-bottom: solid 1px #f2f2f2;
-    //         border-right: solid 1px #f2f2f2;
-    //     }
-    //     .resultTable{
-    //         width: 450px;
-    //     }
-    //     .resultTable td{
-    //         padding: 5px; 
-    //         border: solid 1px #111;
-    //         height: auto;
-    //     }
-         
-    // }
 }
