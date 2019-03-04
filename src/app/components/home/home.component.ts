@@ -18,6 +18,8 @@ export class HomeComponent implements OnInit {
   public isAllTemplateSelected = true;
   public checkboxLabel = 'Unselect all';
   errorMessage: string = '';
+  publicURL = environment.public;
+  isLoading: boolean = false;
   selectedTemplates: any[] = [];
   @ViewChild(ModalComponent) private modal;
 
@@ -25,66 +27,29 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.getTemplateData();
-
-    
   }
 
   private getTemplateData() {
+    this.isLoading = true;
     this.homeService.getTemplateData(environment.usecaseId).then((data) => {
       if (data) {
         this.templates = data['templates'];
-       
-    
         this.checkAllTemplateSelectedOrNot();
         this.selectedTemplates = this.templates;
-        this.getImages();
+        this.isLoading = false;
       }
     },
     error => {
      this.errorMessage = "Unable to retrieve the templates. Please try again later...";
-     //Log error to a file
+     this.isLoading = false;
     });
-    // this.templates = this.homeService.getTeplateData();
   }
-
-  private getImages(){
-     
-    var imagesArr = [];
-    this.templates.map((item, index)=>{
-
-      imagesArr.push(this.homeService.getImage(environment.usecaseId,item.name).then((res:any)=>{
-          console.log(res)
-          let unsafeImageUrl = window.URL.createObjectURL(res);
-          item.image = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
-      }).catch((err)=>{
-        console.log(err)
-        this.errorMessage = "Cannot retrieve image for certain templates";
-      }))
-    })
-
-      Promise.all(imagesArr).then((data)=>{
-        console.log("Data", data)
-      }).catch((err)=>{
-          console.log(err)
-      }).finally(()=>{
-        this.selectedTemplates = this.templates;
-    });
-
-}
-
  
 
   public showTemplatePreview(template) {
     if(template !== null){
-     
-      this.homeService.getImage(environment.usecaseId,template.name).then((res:any)=>{
-        console.log(res)
-        let unsafeImageUrl = window.URL.createObjectURL(res);
-        this.modal.previewedTemplate.image = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
-      }).catch((err)=>{
-        console.log(err)
-        this.errorMessage = "Cannot retrieve image for certain templates";
-      });
+      this.modal.previewedTemplate.name = template.name;
+      this.modal.previewedTemplate.image = "http://18.221.24.240/data/usecase1/Rexel_Sweden/image.png"
       this.modal.display = true;
     }
   }

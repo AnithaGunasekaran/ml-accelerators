@@ -35,7 +35,9 @@ export class TrainService {
   }
 
   getAutoPopulate(usecaseId:string, templateName:string){
+   
     let params = {'use_case_id': usecaseId, 'template_name': templateName}
+    console.log(params)
     return this.httpClient.get(`${this.apiEndPoint}/getDefaultData`, {params: params}).toPromise()
     .then(res => res)
     .then(data => {  return data; });

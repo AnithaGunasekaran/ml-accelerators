@@ -21,7 +21,7 @@ export class TemplatesService {
       let params:any = {'use_case_id': usecaseId, 'template_name': templateName}
       return this.httpClient.get(`${this.apiEndPoint}/getTemplates`, {params: params}).toPromise()
       .then(res =><Documents[]> res )
-      .then(data => {  return data; });
+      .then(data => { console.log(data); return data; });
    }
 
    public extractJSON(usecaseId:string,templateName:string,pdfName:string){

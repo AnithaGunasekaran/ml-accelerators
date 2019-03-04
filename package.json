@@ -28,6 +28,7 @@
     "ng2-pdf-viewer": "^5.2.3",
     "ngx-logger": "^3.3.11",
     "node-sass": "^4.11.0",
+    "pdf-officegen": "^2.0.3",
     "primeflex": "^1.0.0-rc.1",
     "primeicons": "^1.0.0",
     "primeng": "^7.0.5",

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ɵConsole } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { TrainService } from './services/train.service';
 import { environment } from '../../../environments/environment';
@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { HomeService } from '../home/services/home.service';
 import { TemplatesService } from '../extract/services/templates.service'; 
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export interface SelectedTemplate{
   name:string,
@@ -35,57 +36,60 @@ export interface SelectedTemplate{
 export class TrainComponent implements OnInit {
 
   selectedTemplate:string;
+  temp:any="";
   selectedTemplateName:string;
   currID: number = 0;
   pdfArr:any = [];
-  isLoading: Boolean = false;
+  isLoading: boolean = false;
+  isPdfLoading: boolean = true;
   pdfSrc: string = '';
   errorMessage: string = '';
   fields = {};
   dynamicJSON: any;
+  message:string = '';
   trainFormGroup:FormGroup;
   fieldKeys:any = [];
   items:any;
   trainingJSON: any;
+  showAutopopulate: boolean = false;
 
-  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router, private templateService:TemplatesService) { }
+  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router, private templateService:TemplatesService, private modalService: NgbModal) { }
 
   ngOnInit() {
+  
+    
     //Grab the selected template from Home Page
     this.homeSer.currentSelectedTemplate.subscribe((res:any)=>{
+
+      if(res.length === 0 || res === undefined){
+        this.router.navigate(['home'])
+      }
+      this.selectedTemplateName = res[0].name;
       
-      // if(res.length === 0 || res === undefined){
-      //   this.router.navigate(['home'])
-      // }
-      this.selectedTemplateName = "Template 1"//res[0].name;
-      this.selectedTemplate = "1";
       
     })
     this.isLoading = true;
+    this.isPdfLoading= true;
     this.middleware.getMetaData(environment.usecaseId,this.selectedTemplateName).then((data:Metadata)=>{
-      
-       if(data.code !== 200){
-          throw new Error();
-       }
-      // this.pdfArr = data.result.templates;
-       //this.pdfSrc = `${environment.public}${this.pdfArr[this.currID].link}`;
-       this.buildForm(data.result);
+  
+       this.buildForm(data);
       
     }).catch((err)=>{
         this.errorMessage = `Unable to fetch matadata matching the template - ${this.selectedTemplateName}`;
     }).finally(()=>{
-      this.isLoading = false;
+      
     })
-
-    this.middleware.getTrainingPdfs(environment.usecaseId,this.selectedTemplateName).then((res:any)=>{
-      this.pdfArr = res.result;
     
-      this.fetchPDF(this.selectedTemplateName,this.pdfArr[0].file_name)
+    this.middleware.getTrainingPdfs(environment.usecaseId,this.selectedTemplateName).then((res:any)=>{
+      this.pdfArr = res.docs;
+      this.pdfSrc = environment.public + this.pdfArr[0].link;
+      //this.fetchPDF(this.selectedTemplateName,this.pdfArr[0].link);
     }).catch((err)=>{
-      this.errorMessage = `Unable to fetch matadata matching the template - ${this.selectedTemplateName}`;
+      this.errorMessage = `Unable to fetch the PDFs matching the template - ${this.selectedTemplateName}`;
     }).finally(()=>{
       this.isLoading = false;
     })
+
   }
 
   fetchPDF(templateName, fileName){
@@ -141,10 +145,30 @@ export class TrainComponent implements OnInit {
   }
 
   onSubmit() {
+
+    this.isLoading = true;
+
     this.insertEntry(this.currID);
+
     this.middleware.postTrainModel(environment.usecaseId,this.selectedTemplateName,this.trainingJSON).then((res:any)=>{
-      console.log(res)
+      if(res === "success"){
+        this.message = "Train data has been posted successfully!";
+        this.trainFormGroup.reset();
+        this.router.navigate(['home'])
+      }
+    }).catch((err)=>{
+      this.errorMessage = "Error trying to post data to the server";
+    }).finally(()=>{
+      this.isLoading = false;
     });
+  }
+
+  onProgress(progressData:any) {
+    this.isPdfLoading = true;
+    if(progressData.total !== undefined){
+      this.isPdfLoading = false;
+    }
+    
   }
 
   initiliaseFormArray(){
@@ -166,19 +190,16 @@ export class TrainComponent implements OnInit {
       //Reset FormArray from its prev state
       this.initiliaseFormArray();
 
-      //Get response for Auto populate
-      this.middleware.getAutoPopulate(environment.usecaseId,this.selectedTemplate).then((res:any)=>{
-        console.log(res)
-        if(res.code !== 200){
-          throw new Error('Cannot locate the data')
-        }
-        let json = res.result.docs[this.currID]["learn"];
-        this.populateform(json)
-      }).catch((err)=>{
-        this.errorMessage = `Unable to fetch data matching the template - ${this.selectedTemplateName}`;
-      }).finally(()=>{
-        this.isLoading = false;
-      }); 
+
+      let json = this.pdfArr[this.currID];
+
+      if(json.hasOwnProperty('learn')){
+        this.populateform(this.pdfArr[this.currID]["learn"])
+        this.showAutopopulate = true;
+      }
+
+      this.isLoading = false;
+    
   }
 
   saveAndClearForm(){
@@ -192,19 +213,27 @@ export class TrainComponent implements OnInit {
     this.initiliaseFormArray();
   }
   next(){
-  
+    
+    this.isLoading = true;
+
+    
     //Save the form content to JSON file and clear unused controls
     this.saveAndClearForm()
 
     //Increment the current id and bind the pdf to PDF viewer
     this.currID += 1;
 
-    this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
+    this.isPdfLoading= true;
+    this.pdfSrc = environment.public + this.pdfArr[this.currID].link;
+    //this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
 
     //Move on to next form and pre-populate the fields if they exist in final JSON
     if(this.trainingJSON["docs"][this.currID] !== undefined){
       this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
     }
+
+    this.isLoading = false;
+
   }
 
 
@@ -212,7 +241,7 @@ export class TrainComponent implements OnInit {
     //Add keys to the final version of JSON
     this.trainingJSON["docs"][id] = { "doc": "" , "learn": {}};
     //Add the PDF template to the final version of JSON
-    this.trainingJSON["docs"][id]["doc"] = this.pdfArr[id].file_name;//'/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
+    this.trainingJSON["docs"][id]["doc"] = this.pdfArr[id].doc;//'/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
 
     let scalarValues = {};
     let tabularValues = {};
@@ -262,15 +291,23 @@ export class TrainComponent implements OnInit {
           }
         }
       }
+
+      this.isLoading = false;
   }
+
 
   prev(){
     this.saveAndClearForm();
 
     this.currID--;
     
-    this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
+    this.isPdfLoading= true;
+
+    this.pdfSrc = environment.public + this.pdfArr[this.currID].link;
    
     this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
   }
+
+  
+
 }

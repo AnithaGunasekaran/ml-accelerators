@@ -16,6 +16,11 @@ body .ui-progressbar{
     margin-bottom: 5px;
     border: none;
     top: 0;
+    z-index: 9999;
+}
+.pdfloader .ui-progressbar{
+    position: absolute;
+    top: 0;
 }
 h2{
     margin-top: 20px;

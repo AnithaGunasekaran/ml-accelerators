@@ -48,8 +48,8 @@
             <td hidden>{{file.id}}</td>
             <td hidden>{{file.preview}}</td>
             <td valign="center" class="client">{{file.template_name}}</td>
-            <td valign="center" class="name" (click)="openPDF(file.template_name,file.file_name)">
-                {{file.file_name}}
+            <td valign="center" class="name">
+                <a href="#" (click)="openPDF($event, file.template_name,file.file_name)">{{file.file_name}}</a>
             </td>
             <td valign="center" class="status" [class.loading]="file.status === 'In progress'"
             [class.error]="file.status === 'Unable to fetch data'">{{file.status}}</td>

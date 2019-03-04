@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewEncapsulation, HostBinding } from '@angular/core';
-
 import { TemplatesService } from '../extract/services/templates.service';
 import { Documents } from '../extract/models/documents';
 import { Router } from '@angular/router';
@@ -54,31 +53,24 @@ export class ExtractComponent implements OnInit {
         this.selectedTemplates = res;
       })
       if(this.selectedTemplates.length === 0){
-        this.router.navigate(['home']);
+        //this.router.navigate(['home']);
       }
       var pArr = []; let failedPromises = [];
       this.isLoading = true;
       this.selectedTemplates.map((item:any)=>{
+        console.log(item.name)
           pArr.push(this.apiService.fetchFiles(environment.usecaseId,item.name).then((res:any)=>{
-              console.log(res)
-              if(res.code === 200){
-                  res.result.map((items) => {
-                    this.docsArray.push(Object.assign(items, {status: "Not started"}, {json:''}, {pdfLink: items.name}))
-                  });
-              }
-              else{
-                throw new Error(item.name)
-              }
+            res.map((items) => {
+              this.docsArray.push(Object.assign(items, {status: "Not started"}, {json:''}, {pdfLink: items.name}))
+            });
           }).catch((err)=>{
              failedPromises.push(err)
           }));
       });
       Promise.all(pArr).then(()=>{
-        console.log(failedPromises)
         let serverErr = failedPromises.filter((item) =>{
           return item.status >= 400 || item.status <= 500
         });
-        
         if(serverErr.length > 0){
           this.errorMessage = "Unable to fetch documents. Please try again later..."
         }
@@ -101,14 +93,23 @@ export class ExtractComponent implements OnInit {
       });
   }
 
-  openPDF(templateName,itemName){
+  openPDF($event,templateName,itemName){
+    $event.preventDefault();
+    this.isLoading = true;
     this.apiService.fetchPDF(environment.usecaseId,templateName,itemName).then((res:any)=>{
       const fileURL = URL.createObjectURL(res);
       window.open(fileURL, '_blank');
-     })
-   }
-
-  
+      // var a = document.createElement("a");
+      // document.body.appendChild(a);
+      // a.href = fileURL;
+      // a.target = '_blank';
+      // a.click();
+     }).catch(()=>{
+      this.errorMessage = `Cannot fetch the PDF - ${itemName}`;
+    }).finally(()=>{
+       this.isLoading = false;
+    });
+  }
 
   extractJSON(){
       this.isLoading = true;
@@ -126,16 +127,12 @@ export class ExtractComponent implements OnInit {
       var extractArr = [];
       this.docsArray.map((item, index)=>{
         item.status = "In progress"
-        extractArr.push(this.apiService.extractJSON(environment.usecaseId,item.template_name, item.file_name).then((res)=>{
-            if(res.code == 200){
+        extractArr.push(this.apiService.extractJSON(environment.usecaseId,item.template_name, item.file_name).then((res:any)=>{
               item.status = `Completed`;
-              item.json = res.result; 
+              item.json = res; 
               this.show = 'show';
               this.processedFiles++;
-            }
-            else{
-              throw new Error("Exception")
-            }
+           
         }).catch((err)=>{
           item.status = "Unable to fetch data";
           this.extractText = "Extract";
@@ -195,14 +192,20 @@ export class ExtractComponent implements OnInit {
   }
 
   open(doc) {
+    
     this.imageH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 100;
+    this.isLoading = true;
     if(doc.json !== ""){
-      this.display = true;
+      this.pdfSrc = "";
       this.jsonHTML = this.formatJSON(doc.json,"jsonTable");
-      this.apiService.fetchPDF(environment.usecaseId,"1","1").then((res:any)=>{
+      this.apiService.fetchPDF(environment.usecaseId,doc.template_name, doc.file_name).then((res:any)=>{
         const fileURL = URL.createObjectURL(res);
         this.pdfSrc = fileURL;
+      }).finally(()=>{
+        this.display = true;
+        this.isLoading = false;
       })
     }
   }
+  
 }

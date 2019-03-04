@@ -116,8 +116,9 @@ body{
            
         }
         .ui-table-tbody > tr > td{
-            
-            padding: 10px 5px;
+            word-break: break-word;
+
+            padding: 10px;
             border: none;
             border-bottom: solid 1px #d7d7d7;
             text-align: left;

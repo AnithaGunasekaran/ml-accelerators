@@ -31,6 +31,7 @@ export class HomeService {
   }
 
   public getTemplateData(usecaseId:string) {
+    
     let params = {'use_case_id': usecaseId};
     return this.httpClient.get(`${this.endPoint}/getTemplates`, {params: params}).toPromise()
     .then(res => res)

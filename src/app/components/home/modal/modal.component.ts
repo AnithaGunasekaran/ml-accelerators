@@ -12,7 +12,7 @@ export class ModalComponent implements OnInit {
   previewedTemplate:any = {};
   imageH : number = 0;
   constructor() { 
-    console.log(this.previewedTemplate)
+  
   }
 
   ngOnInit() {
