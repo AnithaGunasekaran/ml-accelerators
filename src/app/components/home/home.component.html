@@ -10,10 +10,9 @@
   <ng-container *ngFor="let template of templates">
     <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': template.selected}" (click)="selectTemplate(template)">
       <p-button class="plusButton" icon="pi pi-plus" (onClick)="showTemplatePreview(template)"></p-button>
-      <img src="Card" src="{{publicURL}}/data/usecase1/Rexel_Sweden/image.png" tooltipPosition="top"> 
+      <img src="Card" src="{{publicURL}}{{template.image}}" tooltipPosition="top"> 
       <h6>{{template.name}}</h6>
     </p-card>
-    
   </ng-container>
 </div>
 <ng-container *ngIf="templates.length">

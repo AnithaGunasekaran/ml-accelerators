@@ -1,6 +1,10 @@
 
 <p-progressBar *ngIf="isLoading === true" mode="indeterminate"></p-progressBar>
 <div class="container">
+     <a routerLink="/home">
+        <button class="btn btn-primary pull-left" >Home</button>
+    </a>
+
     <h2 class="text-primary">Fetch Documents</h2>
     <div *ngIf="errorMessage !== ''"  [@enterAnimation] class="alert alert-danger" role="alert">
           {{errorMessage}}

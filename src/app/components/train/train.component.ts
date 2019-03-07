@@ -8,6 +8,7 @@ import { trigger, style, animate, transition } from '@angular/animations';
 import { HomeService } from '../home/services/home.service';
 import { TemplatesService } from '../extract/services/templates.service'; 
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {DialogModule} from 'primeng/dialog';
 
 export interface SelectedTemplate{
   name:string,
@@ -81,8 +82,10 @@ export class TrainComponent implements OnInit {
     })
     
     this.middleware.getTrainingPdfs(environment.usecaseId,this.selectedTemplateName).then((res:any)=>{
+      console.log(res)
       this.pdfArr = res.docs;
       this.pdfSrc = environment.public + this.pdfArr[0].link;
+      
       //this.fetchPDF(this.selectedTemplateName,this.pdfArr[0].link);
     }).catch((err)=>{
       this.errorMessage = `Unable to fetch the PDFs matching the template - ${this.selectedTemplateName}`;
@@ -151,13 +154,18 @@ export class TrainComponent implements OnInit {
     this.insertEntry(this.currID);
 
     this.middleware.postTrainModel(environment.usecaseId,this.selectedTemplateName,this.trainingJSON).then((res:any)=>{
-      if(res === "success"){
-        this.message = "Train data has been posted successfully!";
-        this.trainFormGroup.reset();
+   
+      if(res === "Success1"){
         this.router.navigate(['home'])
       }
+      else{
+       
+        window.alert('Error trying to post data to the server');
+      }
     }).catch((err)=>{
-      this.errorMessage = "Error trying to post data to the server";
+   
+      window.alert('Error trying to post data to the server');
+     
     }).finally(()=>{
       this.isLoading = false;
     });
@@ -168,7 +176,6 @@ export class TrainComponent implements OnInit {
     if(progressData.total !== undefined){
       this.isPdfLoading = false;
     }
-    
   }
 
   initiliaseFormArray(){
@@ -191,12 +198,14 @@ export class TrainComponent implements OnInit {
       this.initiliaseFormArray();
 
 
-      let json = this.pdfArr[this.currID];
+      //let json = this.pdfArr[this.currID];
 
-      if(json.hasOwnProperty('learn')){
-        this.populateform(this.pdfArr[this.currID]["learn"])
-        this.showAutopopulate = true;
-      }
+      this.populateform(this.pdfArr[this.currID]["learn"])
+
+      // if(json.hasOwnProperty('learn')){
+      //   this.populateform(this.pdfArr[this.currID]["learn"])
+      //   this.showAutopopulate = true;
+      // }
 
       this.isLoading = false;
     
@@ -213,28 +222,41 @@ export class TrainComponent implements OnInit {
     this.initiliaseFormArray();
   }
   next(){
-    
     this.isLoading = true;
-
-    
     //Save the form content to JSON file and clear unused controls
     this.saveAndClearForm()
-
     //Increment the current id and bind the pdf to PDF viewer
     this.currID += 1;
-
     this.isPdfLoading= true;
     this.pdfSrc = environment.public + this.pdfArr[this.currID].link;
     //this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
-
     //Move on to next form and pre-populate the fields if they exist in final JSON
     if(this.trainingJSON["docs"][this.currID] !== undefined){
       this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
     }
-
     this.isLoading = false;
-
   }
+
+
+  navigateFrom(formId){
+    this.isLoading = true;
+    //Save the form content to JSON file and clear unused controls
+    this.saveAndClearForm()
+    //Increment the current id and bind the pdf to PDF viewer
+    this.currID = formId;
+    this.isPdfLoading= true;
+    this.pdfSrc = environment.public + this.pdfArr[this.currID].link;
+    //this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
+    //Move on to next form and pre-populate the fields if they exist in final JSON
+
+    console.log("Form no", this.currID);
+    console.log("Form content", this.trainingJSON["docs"][this.currID])
+    if(this.trainingJSON["docs"][this.currID] !== undefined){
+      this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
+    }
+    this.isLoading = false;
+  }
+
 
 
   insertEntry(id){
@@ -264,6 +286,12 @@ export class TrainComponent implements OnInit {
     this.trainingJSON["docs"][id]["learn"]= {"fields": scalarValues, "table":{
       "fields": tabularValues
     }}
+  }
+
+
+  resetForm(){
+    console.log("sdsd")
+    this.trainFormGroup.reset();
   }
 
   populateform(json){

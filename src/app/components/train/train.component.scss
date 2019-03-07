@@ -7,7 +7,7 @@
 .loader {
   color: #007bff;
   font-size: 7px;
-  margin: 50% auto;
+  margin: 25% auto;
   width: 1em;
   height: 1em;
   border-radius: 50%;
@@ -130,6 +130,35 @@
         box-sizing: border-box;
         .btns{
             margin-bottom: 20px;
+            ul{
+              list-style: none;
+              display: inline-block;
+              margin: 0;
+              padding: 0;
+              li{
+                 display: inline;
+                 padding: 5px;
+                 .navlink{
+                    background: none;
+                    bordeR: none;
+                    color: #007bff;
+                    &.active{
+                      background: #007bff;
+                      color: #FFFFFF;
+                    }
+                 }
+                 button{
+                   margin-top:0;
+                   
+                 }
+              }
+            }
+            button{
+              background: none;
+              border: none;
+              color: #007bff;
+              margin-top: 5px;
+            }
         }
         .form{
             border: solid 1px #DADADA;

@@ -53,7 +53,7 @@ export class ExtractComponent implements OnInit {
         this.selectedTemplates = res;
       })
       if(this.selectedTemplates.length === 0){
-        //this.router.navigate(['home']);
+        this.router.navigate(['home']);
       }
       var pArr = []; let failedPromises = [];
       this.isLoading = true;

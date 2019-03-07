@@ -1,19 +1,19 @@
-
+<a routerLink="/home">
+    <button class="btn btn-primary pull-left" >Home</button>
+</a>
+<div *ngIf="isPdfLoading === true"  style="position: absolute; height: 100%; width: 100%; background: rgb(255, 255, 255, 0.8); z-index:10;">
+        <div class="loader">Loading...</div>
+</div>
 <h2 class="text-primary">Train {{selectedTemplateName}}</h2>
 <p-progressBar *ngIf="isLoading === true" mode="indeterminate"></p-progressBar>
 <div class="alert alert-danger" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
 <div class="alert alert-success" *ngIf="message !== ''">{{message}}</div>
+
 <div class="parent">
     <div class="preview">
        
         <!-- <img src="{{imagePath}}" [@enterAnimation]/> -->
         <div style="width: 100%; position: relative; min-height: 700px">
-           
-            <div *ngIf="isPdfLoading === true"  style="position: absolute; height: 100%; width: 100%; background: rgb(255, 255, 255, 0.8); z-index:10;min-height: 700px">
-                    <div class="loader">Loading...</div>
-            </div>
-          
-          
             <div>
                 <pdf-viewer style="display: block; overflow: auto; position: relative;" [render-text-mode]="2" [original-size]="false" [src]="pdfSrc" [render-text]="true" (on-progress)="onProgress($event)" ></pdf-viewer>
             </div>
@@ -21,15 +21,16 @@
         
     </div>
     <div class="form-container">
-            <div [innerHTML]="temp"></div>
+      
         <div class="form">
+                
             <div class="form-group" [formGroup]="trainFormGroup" *ngFor="let field of fieldKeys;let i = index;">
                 <div class="label">
                     <label>{{field.name}}</label>
                 </div>
                 <div class="control">
                     <div *ngIf="field.type === 'scalar'">
-                        <textarea rows="4"  (change) = "changeText($event.target.value)" formControlName="{{field.name}}" class="form-control"></textarea>
+                        <textarea rows="4" formControlName="{{field.name}}" class="form-control"></textarea>
                     </div>
                     <div *ngIf="field.type === 'table'">
                         <div formArrayName="{{field.name}}">
@@ -43,11 +44,17 @@
                 </div>
             </div>
         <button type="submit"  *ngIf="currID === pdfArr.length - 1" class="btn-primary" (click)="onSubmit()">Submit</button>
-        <button class="btn-secondary" *ngIf="showAutopopulate===true" (click)="autopopulate()">Auto Populate</button>
+        <button type="reset" class="btn-secondary" (click)="resetForm()">Clear</button>
+        <button class="btn-secondary" (click)="autopopulate()">Auto Populate</button>
      </div>
     <div class="btns">
-        <button class="btn-primary" *ngIf="currID > 0" (click)="prev()"><i class="fa fa-arrow-left" style="font-size: 24px;"></i></button> 
-        <button class="btn-primary"  *ngIf="currID < pdfArr.length - 1" (click)="next()"><i class="fa fa-arrow-right" style="font-size: 24px;"></i></button>
+        <button *ngIf="currID > 0" (click)="prev()"><i class="fa fa-caret-left" style="font-size: 17px;"></i></button> 
+        <ul>
+            <li *ngFor="let x of pdfArr; let i = index;">
+               <button class="navlink" [ngClass]="currID === i ? 'active' : ''" (click)="navigateFrom(i)">{{i+1}}</button>
+            </li>
+        </ul>
+        <button *ngIf="currID < pdfArr.length - 1" (click)="next()"><i class="fa fa-caret-right" style="font-size: 17px;"></i></button>
     </div>
     </div>
    

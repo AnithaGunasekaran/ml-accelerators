@@ -15,7 +15,7 @@ import { environment } from '../../../environments/environment';
 
 export class HomeComponent implements OnInit {
   public templates = [];
-  public isAllTemplateSelected = true;
+  public isAllTemplateSelected = false;
   public checkboxLabel = 'Unselect all';
   errorMessage: string = '';
   publicURL = environment.public;
@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit {
         this.templates = data['templates'];
         this.checkAllTemplateSelectedOrNot();
         this.selectedTemplates = this.templates;
+        console.log(this.templates)
         this.isLoading = false;
       }
     },
@@ -49,7 +50,7 @@ export class HomeComponent implements OnInit {
   public showTemplatePreview(template) {
     if(template !== null){
       this.modal.previewedTemplate.name = template.name;
-      this.modal.previewedTemplate.image = "http://18.221.24.240/data/usecase1/Rexel_Sweden/image.png"
+      this.modal.previewedTemplate.image = this.publicURL + template.image;
       this.modal.display = true;
     }
   }

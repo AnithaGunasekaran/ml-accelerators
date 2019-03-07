@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   usecaseId: "1",
-  apiEndPoint: 'http://54.85.63.69/api/v1',
-  public:'http://54.85.63.69',
+  apiEndPoint: 'http://localhost:5000/api/v1',
+  public:'http://localhost:5000/assets/pdfs/',
   firebase: {
     apiKey: 'AIzaSyDP7ulefaLJ8fz5MXZZkoD9FzN5h6MI7sQ',
     authDomain: 'ml-acc.firebaseapp.com',

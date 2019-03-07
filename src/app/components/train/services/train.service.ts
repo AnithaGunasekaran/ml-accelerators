@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Metadata } from '../models/metadata';
 
@@ -29,9 +29,9 @@ export class TrainService {
 
   postTrainModel(usecaseId:string, templateName:string, json:string){
     let params = {'use_case_id': usecaseId, 'template_name': templateName};
-    return this.httpClient.post(`${this.apiEndPoint}/train`, json, {params: params}).toPromise()
+    return this.httpClient.post(`${this.apiEndPoint}/train`, json, {params: params,responseType: 'text'}).toPromise()
     .then(res => res)
-    .then(data => {  return data; });
+    .then(data => { console.log("Data",data); return data; });
   }
 
   getAutoPopulate(usecaseId:string, templateName:string){
