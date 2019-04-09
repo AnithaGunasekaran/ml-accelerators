@@ -1,0 +1,22 @@
+.navbar {
+  color: #FFFFFF;
+  background-color: #0F2244;
+  height: 50px;
+  margin-bottom: 10px;
+  // border-top: 5px solid #ff932a;
+  // box-shadow: 0px 4px 10px 0px rgba(0,0,0,0.75);
+  img {
+    height: 40px;
+    width: 160px;
+  }
+  a {
+    cursor: pointer;
+    i {
+      font-size:24px;
+      color: #FFFFFF;
+      &:hover {
+        color: #707070;
+      }
+    }
+  }
+}

@@ -40,8 +40,7 @@ body{
         background-color: #424242;
         opacity: 0.7;
         filter: alpha(opacity=70);
-    }
-    
+    } 
 }
 [_nghost-c3] .pdfViewer.removePageBorders .page{
     margin-bottom: 200px !important;
@@ -53,7 +52,14 @@ body{
  .container{
     max-width: 95%;
     margin: 0 auto;
-    
+    div.sticky {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0px;
+      padding: 5px;
+      z-index: 1;
+      background-color:#FFFFFF;
+    }
     h1{
         color: #FFF;
     }
@@ -73,7 +79,7 @@ body{
         -webkit-transition: opacity 0.8s;
     }
     .ui-table{
-        margin-top: 20px;
+        margin-top: 0px;
         border: solid 1px #d7d7d7;
         color: #6a6a6a;
    
@@ -109,10 +115,10 @@ body{
                     color: #ff932a;
                     text-decoration: underline;
                 }
-                &:hover{
+                &:not(:first-child):hover {
                     background: #fafafa;
                 }
-            }
+              }
            
         }
         .ui-table-tbody > tr > td{
@@ -143,8 +149,8 @@ body{
                 }
                 .plusButton{
                     position: absolute;
-                    top: 5px;
-                    left: -10px;
+                    top: 3px;
+                    left: -5px;
                     button{
                         margin-top: 0;
                     }
@@ -199,6 +205,12 @@ body{
                 .5em 0 0 #111;}}
           
        
+    }
+    .rowcount{
+        position: absolute;
+        top: 10px;
+        left: 35%;
+        font-size: 14px;
     }
     .resultTable{
         width: 100%;

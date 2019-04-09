@@ -1,8 +1,7 @@
 <p-progressBar *ngIf="isLoading === true" mode="indeterminate"></p-progressBar>
-<h2 class="text-primary">
+<!-- <h3 class="text-primary">
   Templates
-</h2>
-
+</h3> -->
 <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
     {{errorMessage}}
 </div>
@@ -10,16 +9,14 @@
   <ng-container *ngFor="let template of templates">
     <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': template.selected}" (click)="selectTemplate(template)">
       <p-button class="plusButton" icon="pi pi-plus" (onClick)="showTemplatePreview(template)"></p-button>
-      <img src="Card" src="{{publicURL}}/data/usecase1/Rexel_Sweden/image.png" tooltipPosition="top"> 
+      <img src="Card" src="{{publicURL}}{{template.image}}" pTooltip="{{template.Desc}}" tooltipPosition="top">
       <h6>{{template.name}}</h6>
     </p-card>
-    
   </ng-container>
 </div>
 <ng-container *ngIf="templates.length">
   <p-checkbox [(ngModel)]="isAllTemplateSelected" label="Select All" binary="true" (onChange)="checkAllTemplateSelectedOrNot()"></p-checkbox>
   <p-button class="extractButton" label="Extract" (click)="navigate('extract')"></p-button>
- 
-  <p-button  class="extractButton" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}" [disabled]="!(selectedTemplates.length === 1)" (click)="navigate('train')"></p-button>
+  <p-button  class="trainButton" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}" [disabled]="!(selectedTemplates.length === 1)" (click)="navigate('train')"></p-button>
 </ng-container>
 <app-modal></app-modal>

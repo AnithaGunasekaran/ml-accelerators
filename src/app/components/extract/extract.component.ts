@@ -53,7 +53,7 @@ export class ExtractComponent implements OnInit {
         this.selectedTemplates = res;
       })
       if(this.selectedTemplates.length === 0){
-        //this.router.navigate(['home']);
+        this.router.navigate(['home']);
       }
       var pArr = []; let failedPromises = [];
       this.isLoading = true;
@@ -61,7 +61,7 @@ export class ExtractComponent implements OnInit {
         console.log(item.name)
           pArr.push(this.apiService.fetchFiles(environment.usecaseId,item.name).then((res:any)=>{
             res.map((items) => {
-              this.docsArray.push(Object.assign(items, {status: "Not started"}, {json:''}, {pdfLink: items.name}))
+              this.docsArray.push(Object.assign(items, {status: "Not started"} , {rows: 0}, {json:''}, {pdfLink: items.name}))
             });
           }).catch((err)=>{
              failedPromises.push(err)
@@ -150,18 +150,50 @@ export class ExtractComponent implements OnInit {
      });;
   }
 
+  getRowCount(json){
+
+    let rowLength = 0;
+    let isScalar = true;
+    let len = Object.keys(json).length;
+    let index = 0;
+    for(var key in json){
+      
+        if(typeof json[key] !== "string"){
+          isScalar = false;
+          if(json[key].length > 0){
+            rowLength = json[key].length;
+          }
+          else{
+            rowLength = 1
+          }
+        }
+        index++;
+        if(index === len){
+          if(isScalar){
+            rowLength = 1;
+          }
+        }
+    }
+
+    
+      
+    return rowLength;
+  }
+
   formatJSON(json,className){
       var htmlTable = "<table class='"+className+"' cellpadding='0' cellspacing='0'>"
       var rowLength = 1;//(className === 'resultTable'? 1 : 1);
       var colcount = 1;
-      htmlTable += "<tr>";
+      htmlTable += "<tr bgcolor='#D3D3D3'>";
       for(var key in json){
           if(colcount > 5 && className == 'resultTable'){
               break;
           }
           htmlTable += `<th>${key}</th>`;
           if(typeof json[key] !== "string"){
-            rowLength = json[key].length;
+            if(json[key].length > 0){
+              rowLength = json[key].length;
+            }
           }
           colcount++;
       }
@@ -178,7 +210,12 @@ export class ExtractComponent implements OnInit {
                     htmlTable += `<td width="10%">${json[key]}</td>`;
                 }
                 else{
+                  if(json[key][i] === undefined){
+                    htmlTable += `<td width="10%">NAN</td>`
+                  }
+                  else{
                     htmlTable += `<td width="10%">${json[key][i]}</td>`
+                  }
                 }
               
             }
@@ -187,7 +224,7 @@ export class ExtractComponent implements OnInit {
           htmlTable += "</tr>";
       }
       htmlTable+= '</table>';
-    
+      
       return htmlTable;
   }
 

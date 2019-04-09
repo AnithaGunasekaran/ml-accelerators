@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
   usecaseId: "1",
-  apiEndPoint: 'http://54.85.63.69/api/v1',
-  public:'http://54.85.63.69',
+  apiEndPoint: 'https://54.85.63.69/api/v1',
+  public:'https://54.85.63.69',
   firebase: {
     apiKey: 'AIzaSyDP7ulefaLJ8fz5MXZZkoD9FzN5h6MI7sQ',
     authDomain: 'ml-acc.firebaseapp.com',

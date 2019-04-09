@@ -8,6 +8,7 @@ import { trigger, style, animate, transition } from '@angular/animations';
 import { HomeService } from '../home/services/home.service';
 import { TemplatesService } from '../extract/services/templates.service'; 
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {DialogModule} from 'primeng/dialog';
 
 export interface SelectedTemplate{
   name:string,
@@ -49,7 +50,11 @@ export class TrainComponent implements OnInit {
   message:string = '';
   trainFormGroup:FormGroup;
   fieldKeys:any = [];
+  totalPages:number = 0;
+  currPage: number = 1;
   items:any;
+  showPrev:boolean = false;
+  showNext:boolean = true;
   trainingJSON: any;
   showAutopopulate: boolean = false;
 
@@ -81,15 +86,27 @@ export class TrainComponent implements OnInit {
     })
     
     this.middleware.getTrainingPdfs(environment.usecaseId,this.selectedTemplateName).then((res:any)=>{
+      console.log(res)
       this.pdfArr = res.docs;
       this.pdfSrc = environment.public + this.pdfArr[0].link;
+      // this.trainingJSON = res;
+      let docsArray = [];
+      for(var i = 0; i < res.docs.length; i++){
+          let doc = res.docs[i];
+          docsArray[i] = { "doc": doc.doc, "link": doc.link}
+          
+      }
+      this.trainingJSON = {"docs": docsArray, "template_id": res.template_id}
+      console.log(this.trainingJSON)
       //this.fetchPDF(this.selectedTemplateName,this.pdfArr[0].link);
+     
     }).catch((err)=>{
       this.errorMessage = `Unable to fetch the PDFs matching the template - ${this.selectedTemplateName}`;
     }).finally(()=>{
       this.isLoading = false;
     })
 
+    
   }
 
   fetchPDF(templateName, fileName){
@@ -129,7 +146,7 @@ export class TrainComponent implements OnInit {
     }
 
     //Prepping JSON response to be posted to API
-    this.trainingJSON = {"template_id":this.selectedTemplateName,"docs": []};
+    //this.trainingJSON = {"template_id":this.selectedTemplateName,"docs": []};
   }
 
   //Method to remove FormArray controls.
@@ -140,6 +157,7 @@ export class TrainComponent implements OnInit {
 
   //Method to add FormArray controls
   addItem(name:string): void {
+   
     const control = <FormArray>this.trainFormGroup.controls[name];
     control.push(new FormControl())
   }
@@ -151,25 +169,83 @@ export class TrainComponent implements OnInit {
     this.insertEntry(this.currID);
 
     this.middleware.postTrainModel(environment.usecaseId,this.selectedTemplateName,this.trainingJSON).then((res:any)=>{
-      if(res === "success"){
-        this.message = "Train data has been posted successfully!";
-        this.trainFormGroup.reset();
-        this.router.navigate(['home'])
+    
+      if(res.status === 200){
+        if(res.body === "Success"){
+          window.alert("Training Successful");
+          this.router.navigate(['home'])
+        }
+        else{
+          window.alert(res.body);
+        }
+      }
+      else{
+        window.alert('Error trying to post data to the server');
       }
     }).catch((err)=>{
-      this.errorMessage = "Error trying to post data to the server";
+      window.alert('Error trying to post data to the server');
+     
     }).finally(()=>{
       this.isLoading = false;
     });
   }
 
-  onProgress(progressData:any) {
-    this.isPdfLoading = true;
-    if(progressData.total !== undefined){
-      this.isPdfLoading = false;
+  pageRendered(e: CustomEvent) {
+    console.log('(page-rendered)', e);
+    if(this.totalPages === 1){
+      this.showNext = false;
+      this.showPrev = false;
+    }
+    this.isLoading = false;
+  }
+
+  prevPDF(e){
+    
+    this.currPage--;
+    if(this.currPage === this.totalPages){
+      this.showNext = false;
+    }
+    else{
+      this.showNext = true;
+    }
+    if(this.currPage !== 1){
+      this.showPrev = true;
+    }
+    else{
+      this.showPrev  = false;
+    }
+  }
+
+  nextPDF(e){
+    if(this.currPage <= this.totalPages){
+      this.currPage++;
+    }
+    if(this.currPage === this.totalPages){
+      this.showNext = false;
+    }
+    else{
+      this.showNext = true;
     }
     
+    if(this.currPage !== 1){
+      this.showPrev = true;
+    }
   }
+
+
+  onProgress(progressData:any) {
+    this.isPdfLoading = true;
+   
+    if(progressData.total !== undefined){
+   
+      this.isPdfLoading = false;
+    }
+  }
+
+  callBackFn(pdf: any) {
+    this.totalPages = Number(pdf._pdfInfo.numPages);
+    // do anything with "pdf"
+ }
 
   initiliaseFormArray(){
     for(var key in this.trainFormGroup.controls){
@@ -191,12 +267,14 @@ export class TrainComponent implements OnInit {
       this.initiliaseFormArray();
 
 
-      let json = this.pdfArr[this.currID];
+      //let json = this.pdfArr[this.currID];
 
-      if(json.hasOwnProperty('learn')){
-        this.populateform(this.pdfArr[this.currID]["learn"])
-        this.showAutopopulate = true;
-      }
+      this.populateform(this.pdfArr[this.currID]["learn"])
+
+      // if(json.hasOwnProperty('learn')){
+      //   this.populateform(this.pdfArr[this.currID]["learn"])
+      //   this.showAutopopulate = true;
+      // }
 
       this.isLoading = false;
     
@@ -213,35 +291,62 @@ export class TrainComponent implements OnInit {
     this.initiliaseFormArray();
   }
   next(){
-    
+    this.resetPDFNav();
     this.isLoading = true;
-
-    
     //Save the form content to JSON file and clear unused controls
     this.saveAndClearForm()
-
     //Increment the current id and bind the pdf to PDF viewer
     this.currID += 1;
-
     this.isPdfLoading= true;
     this.pdfSrc = environment.public + this.pdfArr[this.currID].link;
     //this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
-
     //Move on to next form and pre-populate the fields if they exist in final JSON
     if(this.trainingJSON["docs"][this.currID] !== undefined){
       this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
     }
-
     this.isLoading = false;
+  }
 
+  resetPDFNav(){
+    this.showPrev = false;
+    this.showNext = true;
+    console.log(this.currPage, this.totalPages)
+    this.currPage = 1;
+    this.totalPages = 0;
   }
 
 
+  navigateFrom(formId){
+
+    this.resetPDFNav();
+    
+
+    this.isLoading = true;
+    //Save the form content to JSON file and clear unused controls
+    this.saveAndClearForm()
+    //Increment the current id and bind the pdf to PDF viewer
+    this.currID = formId;
+    this.isPdfLoading= true;
+    this.pdfSrc = environment.public + this.pdfArr[this.currID].link;
+    //this.fetchPDF(this.selectedTemplateName,this.pdfArr[this.currID].file_name)
+    //Move on to next form and pre-populate the fields if they exist in final JSON
+
+    console.log("Form no", this.currID);
+    console.log("Form content", this.trainingJSON["docs"][this.currID])
+    if(this.trainingJSON["docs"][this.currID] !== undefined){
+      this.populateform(this.trainingJSON["docs"][this.currID]["learn"])
+    }
+    this.isLoading = false;
+  }
+
+
+
   insertEntry(id){
-    //Add keys to the final version of JSON
-    this.trainingJSON["docs"][id] = { "doc": "" , "learn": {}};
-    //Add the PDF template to the final version of JSON
-    this.trainingJSON["docs"][id]["doc"] = this.pdfArr[id].doc;//'/Users/ravitejßßßagarlapati/Work/Wissen/tools/pdf_extractor/data/learning_set_3/SD_1.pdf'
+
+    // //Add keys to the final version of JSON
+    // this.trainingJSON["docs"][id] = { "doc": "" , "learn": {}};
+    // //Add the PDF template to the final version of JSON
+    // this.trainingJSON["docs"][id]["doc"] = this.pdfArr[id].doc;
 
     let scalarValues = {};
     let tabularValues = {};
@@ -264,6 +369,11 @@ export class TrainComponent implements OnInit {
     this.trainingJSON["docs"][id]["learn"]= {"fields": scalarValues, "table":{
       "fields": tabularValues
     }}
+  }
+
+
+  resetForm(){
+    this.trainFormGroup.reset();
   }
 
   populateform(json){
@@ -300,6 +410,8 @@ export class TrainComponent implements OnInit {
     this.saveAndClearForm();
 
     this.currID--;
+
+    this.resetPDFNav();
     
     this.isPdfLoading= true;
 

@@ -25,6 +25,8 @@ import { TrainComponent } from './components/train/train.component';
 import {ProgressBarModule} from 'primeng/progressbar';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +35,9 @@ import { environment } from '../environments/environment';
     PageNotFoundComponent,
     PdfViewerComponent,
     ModalComponent,
-    TrainComponent
+    TrainComponent,
+    HeaderComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

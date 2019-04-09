@@ -7,7 +7,7 @@
 .loader {
   color: #007bff;
   font-size: 7px;
-  margin: 50% auto;
+  margin: 25% auto;
   width: 1em;
   height: 1em;
   border-radius: 50%;
@@ -18,6 +18,18 @@
   -webkit-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
+}
+
+div.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  margin-left: 20px;
+  padding: 5px;
+  margin-right: 20px;
+  z-index: 1;
+  background-color: #FFFFFF;
+  color: #0F2244;
 }
 
 
@@ -103,7 +115,7 @@
    
 
     display: flex;
-    margin: 20px;
+    margin: 0px 20px 20px 20px;
     box-sizing: border-box;
     .preview{
         flex: 1;
@@ -130,6 +142,39 @@
         box-sizing: border-box;
         .btns{
             margin-bottom: 20px;
+            ul{
+              list-style: none;
+              display: inline-block;
+              margin: 0;
+              padding: 0;
+              li{
+                 display: inline;
+                 padding: 5px;
+                 .navlink{
+                    color: #0F2244;
+                    cursor: pointer;
+                    &.active{
+                      color: #707070;
+                      text-decoration: none;
+                      pointer-events: none;
+                      cursor: default;
+                    }
+                    &:hover {
+                      text-decoration: underline;
+                    }
+                 }
+                 button{
+                   margin-top: 0;
+                   
+                 }
+              }
+            }
+            button{
+              background: none;
+              border: none;
+              color: #0F2244;
+              margin-top: 5px;
+            }
         }
         .form{
             border: solid 1px #DADADA;
@@ -154,7 +199,17 @@
                     top: 0;
                     left:310px;
                     width: 30px;
+                    background-color: #0F2244;
+                    border: none;
                     
+                }
+                .add{
+                  background: #102244;
+                  left: 380px;
+                  position: absolute;
+                  padding: 5px 10px;
+                  border: none;
+                  color: #FFF;
                 }
                 .btn-secondary{
                     position: absolute;

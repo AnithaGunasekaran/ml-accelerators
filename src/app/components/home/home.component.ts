@@ -5,7 +5,6 @@ import { HomeService } from './services/home.service';
 import { ModalComponent } from './modal/modal.component';
 import { environment } from '../../../environments/environment';
 
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -15,7 +14,7 @@ import { environment } from '../../../environments/environment';
 
 export class HomeComponent implements OnInit {
   public templates = [];
-  public isAllTemplateSelected = true;
+  public isAllTemplateSelected = false;
   public checkboxLabel = 'Unselect all';
   errorMessage: string = '';
   publicURL = environment.public;
@@ -23,7 +22,8 @@ export class HomeComponent implements OnInit {
   selectedTemplates: any[] = [];
   @ViewChild(ModalComponent) private modal;
 
-  constructor(private homeService: HomeService, private router: Router, private sanitizer:DomSanitizer) { }
+
+  constructor(private homeService: HomeService, private router: Router, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.getTemplateData();
@@ -36,11 +36,12 @@ export class HomeComponent implements OnInit {
         this.templates = data['templates'];
         this.checkAllTemplateSelectedOrNot();
         this.selectedTemplates = this.templates;
+        console.log(this.templates);
         this.isLoading = false;
       }
     },
     error => {
-     this.errorMessage = "Unable to retrieve the templates. Please try again later...";
+     this.errorMessage = 'Unable to retrieve the templates. Please try again later...';
      this.isLoading = false;
     });
   }
@@ -49,7 +50,7 @@ export class HomeComponent implements OnInit {
   public showTemplatePreview(template) {
     if(template !== null){
       this.modal.previewedTemplate.name = template.name;
-      this.modal.previewedTemplate.image = "http://18.221.24.240/data/usecase1/Rexel_Sweden/image.png"
+      this.modal.previewedTemplate.image = this.publicURL + template.image;
       this.modal.display = true;
     }
   }
@@ -79,5 +80,4 @@ export class HomeComponent implements OnInit {
       this.templates.forEach(data => data.selected = false);
     }
   }
-
 }

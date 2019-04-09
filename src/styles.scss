@@ -1,11 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 body, html{
-    background: #faf9fd;
+    background: #FFFFFF;
     color: #111111;
     position: relative;
     margin: 0;
     padding: 0;
     font-family: 'Raleway', sans-serif;
+    overflow: hidden;
+    height: 100%;
 }
 body .ui-progressbar{
     position: fixed;
@@ -15,7 +17,7 @@ body .ui-progressbar{
     width: 100%;
     margin-bottom: 5px;
     border: none;
-    top: 0;
+    top: 50px;
     z-index: 9999;
 }
 .pdfloader .ui-progressbar{
@@ -26,5 +28,5 @@ h2{
     margin-top: 20px;
 }
 body .ui-progressbar .ui-progressbar-value{
-    background: #007bff;
+    background: #0F2244;
 }

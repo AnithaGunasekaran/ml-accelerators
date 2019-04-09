@@ -1,10 +1,9 @@
 body {
-  background-color: #FAF9FD;
   .ui-dialog{
     width: 80%;
     .ui-dialog-titlebar{
         border: none;
-        background: #FFF;
+        background: #FFFFFF;
     }
     .ui-dialog-content{
       border: none
@@ -12,14 +11,14 @@ body {
   }
 }
 .p-grid {
-  margin: 40px 20px 100px 20px;
+  margin: 20px;
   p-card {
     object-fit: cover;
     position: relative;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
     .ui-card{
-      background: white;
+      background: #FFFFFF;
        -webkit-box-shadow: 10px 10px 16px -11px rgba(0, 0, 0, 0.55);
       -moz-box-shadow: 10px 10px 16px -11px rgba(0, 0, 0, 0.55);
       box-shadow: 10px 10px 16px -11px rgba(0, 0, 0, 0.55);
@@ -27,7 +26,11 @@ body {
     }
     &.selected {
       .ui-card {
-        border: 1px solid #116FBF;
+        border: 3px solid #0F2244;
+        img{
+          -webkit-filter: blur(1px); /* Safari 6.0 - 9.0 */
+          filter: blur(1px);
+        }
       }
     } 
     .ui-card-body {
@@ -37,7 +40,7 @@ body {
       position: relative;
     }
     .ui-card {
-      background-color:#FEFEFE;
+      background-color:#FFFFFF;
       a{
         position: absolute;
         top: 99%;
@@ -50,8 +53,8 @@ body {
       left: 50%;
       transform: translate(-50%, -50%);
       button{
-        background:transparent;
-        color: #007ad9;
+        background: transparent;
+        color: #0F2244;
         border: none;
         font-size: 15px;
       }
@@ -69,7 +72,7 @@ body {
 }
 
 h6 {
-  color: black;
+  color: #0F2244;
   padding-top: 20px;
   position: absolute;
   text-align: center;
@@ -77,6 +80,11 @@ h6 {
   width: 100%;
 }
 
-.extractButton {
+.extractButton button, .trainButton button {
   margin-left: 15px;
+  background-color: #0F2244;
+}
+
+p-checkbox .ui-chkbox-icon {
+  background-color: #0F2244;
 }

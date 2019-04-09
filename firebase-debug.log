@@ -1,0 +1,30 @@
+[debug] [2019-03-21T04:16:16.934Z] ----------------------------------------------------------------------
+[debug] [2019-03-21T04:16:16.937Z] Command:       /Users/anithagunasekaran/.nvm/versions/node/v11.0.0/bin/node /Users/anithagunasekaran/.nvm/versions/node/v11.0.0/bin/firebase serve --port 3000
+[debug] [2019-03-21T04:16:16.937Z] CLI Version:   6.3.1
+[debug] [2019-03-21T04:16:16.937Z] Platform:      darwin
+[debug] [2019-03-21T04:16:16.937Z] Node Version:  v11.0.0
+[debug] [2019-03-21T04:16:16.943Z] Time:          Thu Mar 21 2019 09:46:16 GMT+0530 (India Standard Time)
+[debug] [2019-03-21T04:16:16.943Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-03-21T04:16:16.955Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-03-21T04:16:16.955Z] > authorizing via signed-in user
+[debug] [2019-03-21T04:16:16.955Z] [iam] checking project ml-accelerators for permissions ["firebase.projects.get"]
+[debug] [2019-03-21T04:16:16.957Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-03-21T04:16:16.957Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-03-21T04:16:17.204Z] <<< HTTP RESPONSE 200
+[debug] [2019-03-21T04:16:17.213Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/ml-accelerators:testIamPermissions  
+
+[debug] [2019-03-21T04:16:18.829Z] <<< HTTP RESPONSE 200
+[debug] [2019-03-21T04:16:18.830Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/ml-accelerators  
+ 
+[debug] [2019-03-21T04:16:20.467Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/Users/anithagunasekaran/ml-accelerators'...
+[info] 
+[debug] [2019-03-21T04:16:20.468Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/182227341571/clients/_:getWebAppConfig  
+ 
+[debug] [2019-03-21T04:16:21.693Z] <<< HTTP RESPONSE 200
+[warn] ⚠  hosting: Port 3000 is not available. Trying another port...
+[info] i  hosting: Serving hosting files from: dist/ml-accelerators
+[info] ✔  hosting: Local server: http://localhost:3005
