@@ -182,10 +182,6 @@ export class TrainComponent implements OnInit {
       else{
         window.alert('Error trying to post data to the server');
       }
-      else{
-       
-        window.alert('Error trying to post data to the server');
-      }
     }).catch((err)=>{
       window.alert('Error trying to post data to the server');
      

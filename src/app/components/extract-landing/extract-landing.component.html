@@ -1,0 +1,34 @@
+<div class="p-grid">
+  <ng-container *ngFor="let usecase of useCases">
+    <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
+      <img src="Card" src="{{publicURL}}{{usecase.image_url}}" width="150" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+      <h6>{{usecase.name}}</h6>
+    </p-card>
+  </ng-container>
+</div>
+
+<hr/>
+<div class="form-container">
+ 
+  <div class="form">
+      <div class="form-group" [formGroup]="uploadPDFsFormGroup">
+          <div formArrayName="file">
+              <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
+                  <input [formControlName]="i" (change)="handleFileInput($event.target.files)" type="file"/>
+                  <button style="background: #102244;  border:none;" class="btn btn-primary" (click)="uploadFile()">Upload</button>
+                  <button  style="margin-left: 10px;background: #102244; border: none; font-size: 16px;" class="btn btn-primary" (click)="addItem('file')">+</button>
+                   <div *ngIf="uploadResponse.status === 'error'">
+                      {{ uploadResponse.message }}
+                    </div>
+                    <div>
+                       
+                        <div *ngIf="uploadResponse.status === 'progress'">
+                            <p-progressBar mode="indeterminate"></p-progressBar>
+                            <div>{{successMsg}}</div>
+                        </div>
+                    </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

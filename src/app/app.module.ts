@@ -27,6 +27,7 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { ExtractLandingComponent } from './components/extract-landing/extract-landing.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +38,8 @@ import { FooterComponent } from './components/footer/footer.component';
     ModalComponent,
     TrainComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    ExtractLandingComponent
   ],
   imports: [
     BrowserModule,

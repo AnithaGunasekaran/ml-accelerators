@@ -5,6 +5,10 @@
 <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
     {{errorMessage}}
 </div>
+<div class="navigation">
+  <p-button class="extractButton" label="Extract" (click)="navigate('extract-landing')"></p-button>
+  <p-button  class="trainButton" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}" [disabled]="!(selectedTemplates.length === 1)" (click)="navigate('train')"></p-button>
+</div>
 <div class="p-grid">
   <ng-container *ngFor="let template of templates">
     <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': template.selected}" (click)="selectTemplate(template)">

@@ -44,7 +44,6 @@
                                 <input [formControlName]="i" type="text"/>
                                 <button class="btn-secondary" *ngIf="i+1 !== trainFormGroup.controls[field.name].controls.length"  (click)="removeItem(field.name,i)">-</button>
                                 <button style="background: #0E2244; color: #FFF; font-size: 12px; width: 30px; font-size: 13px;padding: 6px 10px; border:none; margin-left: 20px;" (click)="addItem(field.name)"  *ngIf="i+1 === trainFormGroup.controls[field.name].controls.length" >+</button>
-                               
                             </div>
                         </div>
                         
