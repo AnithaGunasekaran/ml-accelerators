@@ -1,34 +1,52 @@
-<div class="p-grid">
-  <ng-container *ngFor="let usecase of useCases">
-    <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
-      <img src="Card" src="{{publicURL}}{{usecase.image_url}}" width="150" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
-      <h6>{{usecase.name}}</h6>
-    </p-card>
-  </ng-container>
+<div *ngIf="isLoading === true"  style="position: absolute; height: 100%; width: 100%; background: rgb(255, 255, 255, 0.8); z-index:200;">
+    <div class="loader">Loading...</div>
+</div>
+<div class="row">
+    <div class="p-grid">
+        <ng-container *ngFor="let usecase of useCases">
+          <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
+            <img src="Card" src="{{publicURL}}{{usecase.image_url}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+            <h6>{{usecase.name}}</h6>
+          </p-card>
+        </ng-container>
+      </div>
+</div>
+<div class="row">
+   
+    <div class="form-container" *ngIf="visibleForm"  [@enterAnimation]>
+        <h1>{{selUsecaseName}}</h1>
+        <div style="display:inline-block" *ngFor="let template of templates">
+            <input type="radio" name="optradio" (click)="selectTemplate(template)"  /><label style="padding: 0 10px;">{{ template.name }}</label>
+        </div>
+        <button class="btn btn-secondary" style="position: absolute; right: 10px;" (click)='close()' id="close">Close</button>
+        <div class="form">
+            <div class="form-group" [formGroup]="uploadPDFsFormGroup">
+                <div formArrayName="file">
+                    <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
+                        <input [formControlName]="i" [attr.disabled]="disableCtl ? '' : null"  (change)="handleFileInput($event,i)" type="file"/>
+                        <!-- <button style="background: #102244;  border:none;" class="btn btn-primary" (click)="uploadFile()">Upload</button> -->
+                        <button [attr.disabled]="disableCtl ? '' : null" style="margin-left: 10px;background: #102244; border: none; font-size: 16px;" class="btn btn-primary" (click)="addItem('file')">+</button>
+                         <div *ngIf="uploadResponse.status === 'error'">
+                            {{ uploadResponse.message }}
+                          </div>
+                          <div>
+                              <div *ngIf="uploadResponse.status === 'progress'">
+                                  <p-progressBar mode="indeterminate"></p-progressBar>
+                                  <div>{{successMsg}}</div>
+                              </div>
+                          </div>
+                         
+                    </div>
+                </div>
+            </div>
+            <p><button (click)="extract()" class="btn btn-primary">Extract</button></p>
+        </div>
+      
+    </div>
+    
 </div>
 
-<hr/>
-<div class="form-container">
- 
-  <div class="form">
-      <div class="form-group" [formGroup]="uploadPDFsFormGroup">
-          <div formArrayName="file">
-              <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
-                  <input [formControlName]="i" (change)="handleFileInput($event.target.files)" type="file"/>
-                  <button style="background: #102244;  border:none;" class="btn btn-primary" (click)="uploadFile()">Upload</button>
-                  <button  style="margin-left: 10px;background: #102244; border: none; font-size: 16px;" class="btn btn-primary" (click)="addItem('file')">+</button>
-                   <div *ngIf="uploadResponse.status === 'error'">
-                      {{ uploadResponse.message }}
-                    </div>
-                    <div>
-                       
-                        <div *ngIf="uploadResponse.status === 'progress'">
-                            <p-progressBar mode="indeterminate"></p-progressBar>
-                            <div>{{successMsg}}</div>
-                        </div>
-                    </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
+
+
+
+

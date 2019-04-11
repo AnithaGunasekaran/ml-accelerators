@@ -3,7 +3,6 @@ import { TemplatesService } from '../extract/services/templates.service';
 import { Documents } from '../extract/models/documents';
 import { Router } from '@angular/router';
 import { HomeService } from '../home/services/home.service';
-import { UsecaseService } from '../extract-landing/services/service.service'
 import { environment } from '../../../environments/environment';
 import { trigger, style, animate, transition } from '@angular/animations';
 
@@ -47,15 +46,16 @@ export class ExtractComponent implements OnInit {
   imageH: number=0;
   errorMessage: string = '';
 
-  constructor(private apiService:TemplatesService, private router: Router, private homeSer:HomeService, private useCaseSer:UsecaseService) { }
+  constructor(private apiService:TemplatesService, private router: Router, private homeSer:HomeService) { }
 
   ngOnInit() {
       console.log("Extract")
-      this.useCaseSer.currentExtractedData.subscribe((res)=>{
-        console.log(res)
-        this.docsArray = res;
+      this.homeSer.currentSelectedTemplates.subscribe((res)=>{
+        this.selectedTemplates = res;
       })
-     
+      if(this.selectedTemplates.length === 0){
+        this.router.navigate(['home']);
+      }
       var pArr = []; let failedPromises = [];
       this.isLoading = true;
       this.selectedTemplates.map((item:any)=>{

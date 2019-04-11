@@ -11,9 +11,9 @@
   <div class="sticky">
     <span *ngIf="isFetching">Fetching documents. Please wait...</span>
     <span *ngIf="!isFetching && processedFiles <= 0">Fetched {{total}} file(s)</span>
-    <!-- <span *ngIf="processedFiles > 0">Processed {{processedFiles}} of {{total}} file(s) in {{processingTime}} second(s)</span>
+    <span *ngIf="processedFiles > 0">Processed {{processedFiles}} of {{total}} file(s) in {{processingTime}} second(s)</span>
     <span *ngIf="showExtract && !disableExtract" style="color: #0F2244;margin-left: 20px;cursor: pointer;font-weight: bold;"
-      (click)='extractJSON()'>{{extractText}}</span> -->
+      (click)='extractJSON()'>{{extractText}}</span>
   </div>
 
   <!-- <div *ngIf="showExtract">
@@ -50,7 +50,8 @@
     </ng-template>
     <ng-template cellpadding="0" cellspacing="0" pTemplate="body" let-file>
       <tr [ngClass]="'row'">
-     
+        <td hidden>{{file.id}}</td>
+        <td hidden>{{file.preview}}</td>
         <td valign="center" class="client">{{file.template_name}}</td>
         <td valign="center" class="name">
           <a href="#" (click)="openPDF($event, file.template_name,file.file_name)">{{file.file_name}}</a>

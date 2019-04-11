@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   usecaseId: '1',
-  apiEndPoint: 'http://localhost:5005/api/v1/',
+  apiEndPoint: 'http://localhost:5000/api/v1',
   public: 'https://54.85.63.69/',
   firebase: {
     apiKey: 'AIzaSyDP7ulefaLJ8fz5MXZZkoD9FzN5h6MI7sQ',
