@@ -12,11 +12,13 @@
       </div>
 </div>
 <div class="row">
-   
     <div class="form-container" *ngIf="visibleForm"  [@enterAnimation]>
         <h1>{{selUsecaseName}}</h1>
         <div style="display:inline-block" *ngFor="let template of templates">
-            <input type="radio" name="optradio" (click)="selectTemplate(template)"  /><label style="padding: 0 10px;">{{ template.name }}</label>
+            <label style="cursor: pointer">
+                <input type="radio" name="optradio" (click)="selectTemplate(template)"  />
+                <span style="padding: 0 10px;">{{ template.name }}</span>
+            </label>
         </div>
         <button class="btn btn-secondary" style="position: absolute; right: 10px;" (click)='close()' id="close">Close</button>
         <div class="form">
@@ -35,11 +37,11 @@
                                   <div>{{successMsg}}</div>
                               </div>
                           </div>
-                         
                     </div>
                 </div>
             </div>
-            <p><button (click)="extract()" class="btn btn-primary">Extract</button></p>
+            <!-- <p><button (click)="extract()" class="btn btn-primary">Extract</button></p> -->
+            <p><button (click)="extractMulti()" class="btn btn-primary">Extract</button></p>
         </div>
       
     </div>

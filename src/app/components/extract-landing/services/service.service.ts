@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpErrorResponse, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { map } from  'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
@@ -36,23 +36,15 @@ export class UsecaseService {
     return this.httpClient.post(`${this.endPoint}/postPDF`, { 'fileBase64': data, "fileName": name},).toPromise()
     .then(res => res)
     .then(data => { return data; });
-      // return this.httpClient.post<any>(`${this.endPoint}/postPDF`, { 'fileBase64': data, "fileName": name}, {
-      //   reportProgress: true,
-      //   observe: 'events'
-      // }).pipe(map((event) => {
-     
-      //     switch (event.type) {
-      //       case HttpEventType.UploadProgress:
-      //         const progress = Math.round(100 * event.loaded / event.total);
-      //         return { status: 'progress', message: progress };
-      //       case HttpEventType.Response:
-      //         console.log("Events", event);
-      //         return event.body;
-      //       default:
-      //         return `Unhandled event: ${event.type}`;
-      //     }
-      //   })
-      // );
+  }
+
+  postFileMultiPart(formData:FormData){
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    headers.append('Accept', 'application/x-www-form-urlencoded');
+    return this.httpClient.post(`http://localhost:5005/profile`,formData, {headers: headers}).toPromise()
+    .then(res => res)
+    .then(data => { return data; });
   }
    
 }

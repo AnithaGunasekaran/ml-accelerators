@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ViewEncapsulation } from '@angular/core';
 import { UsecaseService } from './services/service.service';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import {style, state, animate, transition, trigger} from '@angular/animations';
@@ -24,11 +24,13 @@ import { Router } from '@angular/router';
     )
   ],
   templateUrl: './extract-landing.component.html',
-  styleUrls: ['./extract-landing.component.scss']
+  styleUrls: ['./extract-landing.component.scss'],
+
+  encapsulation: ViewEncapsulation.None
 })
 export class ExtractLandingComponent implements OnInit {
 
-  private useCases: any;
+  private useCases: any =[];
   private uploadPDFs:any;
   private uploadPDFsFormGroup:FormGroup;
   private fileToUpload: File[] = [];
@@ -59,7 +61,11 @@ export class ExtractLandingComponent implements OnInit {
 
   showForm(usecase){
     this.visibleForm = true;
+    this.useCases.map((item)=>{
+        item.selected = false;
+    })
     this.resetForm();
+    usecase.selected = true;
     this.selUsecaseName = usecase.name;
     this.disableCtl = true;
     this.templates = [];
@@ -77,7 +83,6 @@ export class ExtractLandingComponent implements OnInit {
 
   readUploadedFileAsText = (inputFile) => {
     const temporaryFileReader = new FileReader();
-  
     return new Promise((resolve, reject) => {
       temporaryFileReader.onerror = () => {
         temporaryFileReader.abort();
@@ -92,7 +97,34 @@ export class ExtractLandingComponent implements OnInit {
   };
 
   
-  
+  extractMulti(){
+    this.isLoading =  true;
+    let uploadArr = [];
+    this.fileToUpload.map((item:any)=>{
+      let formData = new FormData();
+      console.log("Item", item)
+      formData.append('fileKey', item, item.name);
+      uploadArr.push(this.useCaseService.postFileMultiPart(formData).then((res)=>{
+        let result:any = {};
+        result.template_name= this.selectedTemplate.name;
+        result.file_name = item.name;
+        result.status = `Completed`; 
+        if(res !== `Error`){
+          result.json = res;
+        }
+        else{
+          result.status = `Unable to fetch data`;
+          result.json = '';
+        }
+        return result;
+      }))
+    });
+    Promise.all(uploadArr).then((res)=>{
+      console.log("All",res)
+      this.useCaseService.storeExtractedData(res);
+      this.route.navigate(['extract'])
+    });
+  }
 
   extract(){
     this.isLoading =  true;
@@ -107,18 +139,29 @@ export class ExtractLandingComponent implements OnInit {
          }));
     });
 
-    
-
     Promise.all(readProm).then((res)=>{
         res.map((item:any)=>{
-        
             promArray.push(this.useCaseService.postFile(item.data, item.name).then((res)=>{
-                 let result:any = {};
-                 result.template_name= this.selectedTemplate.name;
-                 result.json = res;
-                 result.file_name = item.name;
-                 result.status = `Completed`; 
-                 return result;
+                console.log(res)
+                let result:any = {};
+                result.template_name= this.selectedTemplate.name;
+                result.file_name = item.name;
+                result.status = `Completed`; 
+                if(res !== `Error`){
+                  result.json = res;
+                }
+                else{
+                  result.status = `Unable to fetch data`;
+                  result.json = '';
+                }
+                return result;
+            }).catch((err)=>{
+                let result:any = {};
+                result.template_name= this.selectedTemplate.name;
+                result.file_name = item.name;
+                result.status = `Unable to fetch data`; 
+                result.json = '';
+                return result;
             }))
         });
         Promise.all(promArray).then((res)=>{
@@ -165,7 +208,11 @@ export class ExtractLandingComponent implements OnInit {
  
     this.useCaseService.fetchUsecases().then((data) => {
       if (data) {
-        this.useCases = data[0]['usecases'];
+        let usecases = data[0]['usecases'];
+        usecases.map((item)=>{
+          this.useCases.push(Object.assign(item, {selected: false}));
+        })
+        console.log(this.useCases)
       }
     },
     error => {
