@@ -73,8 +73,8 @@
                                 (onFileOver)="fileOver($event)" accept="pdf" (onFileLeave)="fileLeave($event)">
                                     <span>Drag and drop the templates for {{selectedUsecase[0].name}}</span>
                                 </file-drop>
-                                <div *ngIf="filesDrag.length > 0" style="text-align: left; width: 100%" class="upload-table">
-                                        <table class="table">
+                                <div *ngIf="filesDrag.length > 0 && filesDrag.length <=5" style="text-align:  left; width: 100%" class="upload-table">
+                                        <table style="margin-top:20px" class="table">
                                             <thead>
                                                 <tr>
                                                     <th>Files dropped</th>

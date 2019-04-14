@@ -5,6 +5,7 @@ import {style, state, animate, transition, trigger} from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { UploadEvent, UploadFile, FileSystemFileEntry, FileSystemDirectoryEntry} from 'ngx-file-drop';
+import { AlertPromise } from 'selenium-webdriver';
  
 
 
@@ -21,7 +22,7 @@ import { UploadEvent, UploadFile, FileSystemFileEntry, FileSystemDirectoryEntry}
       state('closed', style({
         height: '5%',
         overflow: 'hidden',
-        transform: 'translateY(0%)',
+        transform: 'translateY(100%)',
         opacity: 1
       })),
       transition('open => closed', [
@@ -91,6 +92,9 @@ export class ExtractLandingComponent  implements OnInit{
 
   public dropped(event: UploadEvent) {
     this.filesDrag = event.files;
+    if(this.filesDrag.length >= 6){
+      alert("You cannot select select more than 5 file(s)")
+    }
     console.log(this.filesDrag)
   }
       
@@ -157,6 +161,12 @@ export class ExtractLandingComponent  implements OnInit{
 
   private fileOver(event){
     console.log(this.filesDrag)
+
+    if(this.filesDrag.length >= 6){
+      alert("Please select less than 5 file(s)")
+    }
+
+    
   }
 
   
