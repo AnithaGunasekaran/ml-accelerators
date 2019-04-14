@@ -28,6 +28,7 @@ import { environment } from '../environments/environment';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ExtractLandingComponent } from './components/extract-landing/extract-landing.component';
+import { FileDropModule } from 'ngx-file-drop';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,6 +54,7 @@ import { ExtractLandingComponent } from './components/extract-landing/extract-la
     AngularFireModule.initializeApp(environment.firebase),
     PdfViewerModule,
     DialogModule,
+    FileDropModule,
     NgbModule,
     LightboxModule,
     ButtonModule,

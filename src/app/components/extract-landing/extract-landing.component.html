@@ -1,54 +1,98 @@
-<div *ngIf="isLoading === true"  style="position: absolute; height: 100%; width: 100%; background: rgb(255, 255, 255, 0.8); z-index:200;">
-    <div class="loader">Loading...</div>
-</div>
-<div class="row">
-    <div class="p-grid">
-        <ng-container *ngFor="let usecase of useCases">
-          <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
-            <img src="Card" src="{{publicURL}}{{usecase.image_url}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
-            <h6>{{usecase.name}}</h6>
-          </p-card>
-        </ng-container>
-      </div>
-</div>
-<div class="row">
-    <div class="form-container" *ngIf="visibleForm"  [@enterAnimation]>
-        <h1>{{selUsecaseName}}</h1>
-        <div style="display:inline-block" *ngFor="let template of templates">
-            <label style="cursor: pointer">
-                <input type="radio" name="optradio" (click)="selectTemplate(template)"  />
-                <span style="padding: 0 10px;">{{ template.name }}</span>
-            </label>
-        </div>
-        <button class="btn btn-secondary" style="position: absolute; right: 10px;" (click)='close()' id="close">Close</button>
-        <div class="form">
-            <div class="form-group" [formGroup]="uploadPDFsFormGroup">
-                <div formArrayName="file">
-                    <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
-                        <input [formControlName]="i" [attr.disabled]="disableCtl ? '' : null"  (change)="handleFileInput($event,i)" type="file"/>
-                        <!-- <button style="background: #102244;  border:none;" class="btn btn-primary" (click)="uploadFile()">Upload</button> -->
-                        <button [attr.disabled]="disableCtl ? '' : null" style="margin-left: 10px;background: #102244; border: none; font-size: 16px;" class="btn btn-primary" (click)="addItem('file')">+</button>
-                         <div *ngIf="uploadResponse.status === 'error'">
-                            {{ uploadResponse.message }}
-                          </div>
-                          <div>
-                              <div *ngIf="uploadResponse.status === 'progress'">
-                                  <p-progressBar mode="indeterminate"></p-progressBar>
-                                  <div>{{successMsg}}</div>
-                              </div>
-                          </div>
-                    </div>
-                </div>
-            </div>
-            <!-- <p><button (click)="extract()" class="btn btn-primary">Extract</button></p> -->
-            <p><button (click)="extractMulti()" class="btn btn-primary">Extract</button></p>
-        </div>
-      
-    </div>
+ <div class="row"  [ngClass]="show ? 'expand' : ''">
+        <div class="container" [ngClass]="visibleForm ? 'seltile' : ''">
+                <h1>Usecases</h1>
     
+                <div class="p-grid" *ngIf="selectedUsecase.length ===  0">
+                    <ng-container *ngFor="let usecase of useCases">
+                        <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
+                        <img src="Card" src="{{publicURL}}{{usecase.image_url}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+                        <h6>{{usecase.name}}</h6>
+                        </p-card>
+                    </ng-container>
+                </div>
+    
+                <div  class="p-grid selected" *ngIf="selectedUsecase.length === 1">
+                    <ng-container *ngFor="let usecase of selectedUsecase">
+                            <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
+                                    <img src="Card" src="{{publicURL}}{{usecase.image_url}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+                                    <h6>{{usecase.name}}</h6>
+                            </p-card>
+                    </ng-container>
+                </div>
+              
+        </div>
+    
+    </div>
+
+
+<div  [@openClose]="stateName">
+        <button class="btn btn-primary float-right" style="margin-right: 20px;" (click)="toggle()">{{show ? 'Collapse': 'Expand'}}</button>
+        
+    <div style="max-width: 800px;margin: 0 auto;">
+
+            
+            <div class="form-container"  [ngClass]="visibleForm === true ? 'noborder': ''">
+                    <h3 style="font-size: 22px; margin-top: 10px;">Selected usecase - {{selectedUsecase[0].name}}</h3>
+                     <div class="template-form">
+                         <div style="text-align: right; font-size: 18px; font-weight: bold; line-height: 30px; padding-right: 80px;">
+                             Select a template:
+                         </div>
+                         <div class="radiobtns">
+                             <div class="ctl" *ngFor="let template of templates">
+                                 <label style="cursor: pointer">
+                                     <input type="radio" name="optradio" (click)="selectTemplate(template)"  />
+                                     <span style="padding: 0 10px;">{{ template.name }}</span>
+                                 </label>
+                             </div>
+                         </div>
+                     </div>
+                     <h3 *ngIf="selectedTemplate" style="font-size: 22px; margin-top: 10px;">Upload for template - {{selectedTemplate.name}}</h3>
+                     <div [hidden]='disableCtl' class="form">
+                         <div class="form-group" [formGroup]="uploadPDFsFormGroup">
+                             <div formArrayName="file">
+                                 <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
+             
+                                     <input [formControlName]="i" [attr.disabled]="disableCtl ? '' : null"  (change)="handleFileInput($event,i)" type="file"/>
+                                     <!-- <button style="background: #102244;  border:none;" class="btn btn-primary" (click)="uploadFile()">Upload</button> -->
+                                     <button [attr.disabled]="disableCtl ? '' : null" style="margin-left: 10px;background: #102244; border: none; font-size: 16px;" *ngIf="i === uploadPDFsFormGroup.controls['file'].controls.length -1" class="btn btn-primary" (click)="addItem('file')">+</button>
+                                     <button [attr.disabled]="disableCtl ? '' : null" style="margin-left: 10px;background: #102244; border: none; font-size: 16px;" *ngIf="i !== uploadPDFsFormGroup.controls['file'].controls.length -1" class="btn btn-primary" (click)="removeItem('file')">-</button>
+                                      <div *ngIf="uploadResponse.status === 'error'">
+                                         {{ uploadResponse.message }}
+                                       </div>
+                                       <div>
+                                           <div *ngIf="uploadResponse.status === 'progress'">
+                                               <p-progressBar mode="indeterminate"></p-progressBar>
+                                               <div>{{successMsg}}</div>
+                                           </div>
+                                       </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div [hidden]='disableCtl' style="max-width: 800px;margin: 0 auto 20px 0;">
+                                <file-drop [attr.disabled]="disableCtl ? '' : null"  dropZoneLabel="" (onFileDrop)="dropped($event)" 
+                                (onFileOver)="fileOver($event)" accept="pdf" (onFileLeave)="fileLeave($event)">
+                                    <span>Drag and drop the templates for {{selectedUsecase[0].name}}</span>
+                                </file-drop>
+                                <div *ngIf="filesDrag.length > 0" style="text-align: left; width: 100%" class="upload-table">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Files dropped</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="upload-name-style">
+                                                <tr *ngFor="let item of filesDrag; let i=index">
+                                                    <td><strong>{{ item.relativePath }}</strong></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            </div>
+                         <!-- <p><button (click)="extract()" class="btn btn-primary">Extract</button></p> -->
+                         <p><button (click)="extractMulti()" class="btn btn-primary">Extract</button></p>
+                     </div>
+                   
+                 </div>
+    </div>
+       
 </div>
-
-
-
-
-
