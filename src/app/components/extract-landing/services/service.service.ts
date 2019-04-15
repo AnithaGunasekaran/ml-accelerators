@@ -16,13 +16,13 @@ export class UsecaseService {
   constructor(private httpClient:HttpClient) {}
 
    public fetchUsecases(){
-    return this.httpClient.get(`${this.endPoint}/getTrainedUsecases`).toPromise()
+    return this.httpClient.get(`${this.endPoint}/getUsecases`).toPromise()
     .then(res => res)
     .then(data => { return data; });
    }
 
-   public fetchTemplates(name:string){
-    return this.httpClient.get(`${this.endPoint}/getModels?usecase=${name}`).toPromise()
+   public fetchTemplates(id:string){
+    return this.httpClient.get(`${this.endPoint}/getTemplatesForExtract?use_case_id=${id}`).toPromise()
     .then(res => res)
     .then(data => { return data; });
    }

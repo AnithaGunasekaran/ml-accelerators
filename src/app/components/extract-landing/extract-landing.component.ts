@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { UploadEvent, UploadFile, FileSystemFileEntry, FileSystemDirectoryEntry} from 'ngx-file-drop';
 import { AlertPromise } from 'selenium-webdriver';
+import { HeaderService } from '../header/services/header.service';
  
 
 
@@ -16,20 +17,20 @@ import { AlertPromise } from 'selenium-webdriver';
       state('open', style({
         height: '45%',
         overflow: 'scroll',
-        transform: 'translateY(-100%)',
+        transform: 'translateY(-90%)',
         opacity: 1
       })),
       state('closed', style({
-        height: '5%',
+        height: '0%',
         overflow: 'hidden',
-        transform: 'translateY(100%)',
-        opacity: 1
+        transform: 'translateY(150%)',
+        opacity: 0
       })),
       transition('open => closed', [
         animate('1s')
       ]),
       transition('closed => open', [
-        animate('0.5s')
+        animate('1s')
       ]),
     ]),
   ],
@@ -68,9 +69,10 @@ export class ExtractLandingComponent  implements OnInit{
 
   show = false;
 
-   constructor(private useCaseService:UsecaseService, private formBuilder:FormBuilder, private route:Router) { }
+   constructor(private useCaseService:UsecaseService, private formBuilder:FormBuilder, private route:Router, private headerSerivce: HeaderService) { }
 
   ngOnInit() {
+    this.headerSerivce.storeCurrentNavigatedUrl(this.route.url);
     this.getUsecases();
     this.buildForm();
   }
@@ -82,12 +84,18 @@ export class ExtractLandingComponent  implements OnInit{
 
 
   toggle() {
-    if(this.selectedUsecase.length === 0){
-       alert('Please select a usecase to proceed')
-    }
-    else{
-     this.show = !this.show;
-    }
+    this.show = !this.show;
+
+    this.selectedUsecase.length = 0;
+    this.useCases.map((item)=>{
+      item.selected = false;
+    })
+    // if(this.selectedUsecase.length === 0){
+    //    alert('Please select a usecase to proceed')
+    // }
+    // else{
+    //  this.show = !this.show;
+    // }
   }
 
   public dropped(event: UploadEvent) {
@@ -102,12 +110,12 @@ export class ExtractLandingComponent  implements OnInit{
   showForm(usecase){
   
     usecase.selected = !usecase.selected;
-    
     this.selectedUsecase = Object.values(this.useCases).filter((value:any) => value.selected === true);
    
     this.visibleForm = true; 
     this.templates = [];
-    this.useCaseService.fetchTemplates(usecase.name.toLowerCase()).then((data:any) => {
+    console.log("Selected usecase - ",this.selectedUsecase)
+    this.useCaseService.fetchTemplates(usecase.use_case_id).then((data:any) => {
       data.templates.map((items) => {
         this.templates.push(Object.assign(items, {selected: false}));
       });
@@ -171,23 +179,23 @@ export class ExtractLandingComponent  implements OnInit{
 
   
   extractMulti(){
-    console.log(this.filesDrag)
+
     this.isLoading =  true;
     let uploadArr = [];
-    this.filesDrag.map((item:any)=>{
+    this.fileToUpload.map((item:any)=>{
       let formData = new FormData();
-      const fileEntry = item.fileEntry as FileSystemFileEntry;
-      fileEntry.file((file: File) => {
-        formData.append('fileKey',file, item.relativePath);
-        this.useCaseService.postFileMultiPart(formData).then((res)=>{
+      // const fileEntry = item.fileEntry as FileSystemFileEntry;
+      // fileEntry.file((file: File) => {
+      //   formData.append('fileKey',file, item.relativePath);
+      //   this.useCaseService.postFileMultiPart(formData).then((res)=>{
 
-        });
-      });
-      console.log(item.fileEntry)
+      //   });
+      // });
+      // console.log(item.fileEntry)
       // console.log("Item", item)
-       
-      // formData.append('usecase', this.selectedUsecase[0].name);
-      // formData.append('template',this.selectedTemplate.name)
+      formData.append('fileKey', item, item.name)
+      formData.append('usecase', this.selectedUsecase[0].name);
+      formData.append('template',this.selectedTemplate.name)
       uploadArr.push(this.useCaseService.postFileMultiPart(formData).then((res)=>{
         let result:any = {};
         result.template_name= this.selectedTemplate.name;
@@ -295,19 +303,21 @@ export class ExtractLandingComponent  implements OnInit{
   }
 
   private getUsecases() {
- 
+    this.isLoading = true;
     this.useCaseService.fetchUsecases().then((data) => {
       if (data) {
-        let usecases = data[0]['usecases'];
-        usecases.map((item)=>{
-          this.useCases.push(Object.assign(item, {selected: false}));
-        })
-        console.log(this.useCases)
+        console.log(data)
+        let usecases = data;
+        for (var property in data) {
+          console.log(property, data[property]);
+          this.useCases.push(Object.assign(data[property], { use_case_id: property}, {selected: false}));
+        }
       }
     },
     error => {
      
     });
+    this.isLoading = false;
   }
 
 }

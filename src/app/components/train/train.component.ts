@@ -9,6 +9,7 @@ import { HomeService } from '../home/services/home.service';
 import { TemplatesService } from '../extract/services/templates.service'; 
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {DialogModule} from 'primeng/dialog';
+import { TrainLandingService } from '../train-landing/services/train-landing.service';
 
 export interface SelectedTemplate{
   name:string,
@@ -57,25 +58,27 @@ export class TrainComponent implements OnInit {
   showNext:boolean = true;
   trainingJSON: any;
   showAutopopulate: boolean = false;
+  useCaseId:string = '';
 
-  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router, private templateService:TemplatesService, private modalService: NgbModal) { }
+  constructor(private route:ActivatedRoute, private middleware:TrainService,private formBuilder:FormBuilder, private homeSer:HomeService,private router:Router, private templateService:TemplatesService, private modalService: NgbModal, private trainLService: TrainLandingService) { }
 
   ngOnInit() {
   
     
     //Grab the selected template from Home Page
-    this.homeSer.currentSelectedTemplate.subscribe((res:any)=>{
-
+    this.trainLService.currentSelectedTemplate.subscribe((res:any)=>{
+     
+      console.log("Resss",res)
       if(res.length === 0 || res === undefined){
         this.router.navigate(['home'])
       }
-      this.selectedTemplateName = res[0].name;
-      
-      
+      this.selectedTemplateName = res.template[0].name;
+      this.useCaseId = res.usecaseId;
     })
+    console.log(this.selectedTemplateName)
     this.isLoading = true;
     this.isPdfLoading= true;
-    this.middleware.getMetaData(environment.usecaseId,this.selectedTemplateName).then((data:Metadata)=>{
+    this.middleware.getMetaData(this.useCaseId,this.selectedTemplateName).then((data:Metadata)=>{
   
        this.buildForm(data);
       
@@ -85,10 +88,11 @@ export class TrainComponent implements OnInit {
       
     })
     
-    this.middleware.getTrainingPdfs(environment.usecaseId,this.selectedTemplateName).then((res:any)=>{
-      console.log(res)
+    this.middleware.getTrainingPdfs(this.useCaseId,this.selectedTemplateName).then((res:any)=>{
+      
       this.pdfArr = res.docs;
-      this.pdfSrc = environment.public + this.pdfArr[0].link;
+      this.pdfSrc = environment.public+ this.pdfArr[0].link;
+
       // this.trainingJSON = res;
       let docsArray = [];
       for(var i = 0; i < res.docs.length; i++){
@@ -111,7 +115,7 @@ export class TrainComponent implements OnInit {
 
   fetchPDF(templateName, fileName){
     
-    this.templateService.fetchPDF(environment.usecaseId, templateName, fileName).then((res:any)=>{
+    this.templateService.fetchPDF(this.useCaseId, templateName, fileName).then((res:any)=>{
       const fileURL = URL.createObjectURL(res);
       this.pdfSrc = fileURL;
     })
@@ -168,7 +172,7 @@ export class TrainComponent implements OnInit {
 
     this.insertEntry(this.currID);
 
-    this.middleware.postTrainModel(environment.usecaseId,this.selectedTemplateName,this.trainingJSON).then((res:any)=>{
+    this.middleware.postTrainModel(this.useCaseId,this.selectedTemplateName,this.trainingJSON).then((res:any)=>{
     
       if(res.status === 200){
         if(res.body === "Success"){

@@ -33,6 +33,7 @@ export class TemplatesService {
   
    public fetchPDF(usecaseId:string, templateName:string, pdfName: string){
       let params = { "use_case_id" : usecaseId, 'template_name': templateName, 'pdf_name': pdfName}
+
       return this.httpClient.get(`${this.apiEndPoint}/getPdf`, {params: params,  responseType: "blob"}).toPromise()
       .then(res => res)
       .then(data => { return data; });

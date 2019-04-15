@@ -1,4 +1,9 @@
 body {
+  h3 {
+    color: #0F2244;
+    padding: 20px;
+    margin-bottom: 50px;
+  }
   .ui-dialog{
     width: 80%;
     .ui-dialog-titlebar{
@@ -81,8 +86,12 @@ h6 {
 }
 
 .extractButton button, .trainButton button {
-  margin-left: 15px;
+  margin-bottom: 30px;
   background-color: #0F2244;
+  border-radius: 25px;
+  width: 400px;
+  height: 100px;
+  font-size: 28px;
 }
 
 p-checkbox .ui-chkbox-icon {

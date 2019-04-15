@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { HeaderService } from './services/header.service';
 
 @Component({
   selector: 'app-header',
@@ -8,14 +9,29 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
+  public displayUsecasePageLink = false;
   @Input() title: string;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private headerService: HeaderService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.headerService.navigatedUrl.subscribe((res) => {
+      console.log(res);
+      if (res !== '/home') {
+        this.displayUsecasePageLink = true;
+      } else  {
+        this.displayUsecasePageLink = false;
+      }
+    });
+  }
 
   public navigateToHome() {
     this.router.navigate(['home']);
+  }
+
+  public navigate(path: string) {
+
+    this.router.navigate([path]);
   }
 
 }

@@ -29,6 +29,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ExtractLandingComponent } from './components/extract-landing/extract-landing.component';
 import { FileDropModule } from 'ngx-file-drop';
+import { TrainLandingComponent } from './components/train-landing/train-landing.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,7 +41,8 @@ import { FileDropModule } from 'ngx-file-drop';
     TrainComponent,
     HeaderComponent,
     FooterComponent,
-    ExtractLandingComponent
+    ExtractLandingComponent,
+    TrainLandingComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,41 @@
+<div class="trainlanding">
+    <div class="row justify-content-center">
+        <div class="p-grid">
+          <ng-container *ngFor="let usecase of usecases">
+            <p-card [style]="{width: '200px'}" [ngStyle]="{'display':(!usecase.selected && isAnyUsecaseSelected) ? 'none' : '' }"
+              class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}" (click)="selectUsecase(usecase)">
+              <img src="Card" src="{{publicURL}}{{usecase.image_url}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+              <h6>{{usecase.name}}</h6>
+            </p-card>
+          </ng-container>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="template-panel justify-content-center" *ngIf="isAnyUsecaseSelected" [@enterAnimation]>
+          <div class="heading">
+            <h4 style="font-size: 28px;">Select a Template</h4>
+            <button class="btn btn-secondary" style="position: relative; float: right;top: -45px;right: 10px;" (click)='close()'
+              id="close">Close</button>
+          </div>
+          <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
+            {{errorMessage}}
+          </div>
+          <div class="p-grid">
+            <ng-container *ngFor="let template of templates">
+      
+              <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': template.selected}"
+                (click)="selectTemplate(template)">
+                <p-button class="plusButton" icon="pi pi-plus" (onClick)="showTemplatePreview(template)"></p-button>
+                <img src="Card" src="{{publicURL}}{{template.image}}" pTooltip="{{template.Desc}}" tooltipPosition="top">
+                <h6>{{template.name}}</h6>
+              </p-card>
+            </ng-container>
+          </div>
+          <ng-container *ngIf="templates.length">
+            <p-button class="train-button" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}"
+              [disabled]="!isAnyTemplateSelected" (click)="navigate('train')"></p-button>
+          </ng-container>
+          <app-modal></app-modal>
+        </div>
+      </div>
+</div>

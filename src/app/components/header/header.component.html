@@ -6,6 +6,8 @@
     <!-- <h4>{{title}}</h4> -->
   </div>
   <div class="navbar-nav mx-left" style="padding-right: 40px;">
-      <a class="nav-link" (click)="navigateToHome()"><i class="fas fa-home"></i></a>
-    </div>
+    <a *ngIf="displayUsecasePageLink" class="nav-link" (click)="navigate('train-landing')">Train</a>
+    <a *ngIf="displayUsecasePageLink" class="nav-link" (click)="navigate('extract-landing')">Extract</a>
+    <a class="nav-link" (click)="navigateToHome()"><i class="fas fa-home"></i></a>
+  </div>
 </nav>

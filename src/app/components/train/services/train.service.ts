@@ -20,6 +20,7 @@ export class TrainService {
   }
 
   getTrainingPdfs(usecaseId:string,templateName:string){
+ 
     let params = {'use_case_id': usecaseId, 'template_name': templateName}
     return this.httpClient.get(`${this.apiEndPoint}/getTrainPdfs`, {params:params}).toPromise()
       .then(res => res)
