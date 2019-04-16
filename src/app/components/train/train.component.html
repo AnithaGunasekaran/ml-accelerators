@@ -16,10 +16,10 @@
        
         <!-- <img src="{{imagePath}}" [@enterAnimation]/> -->
         <div style="width: 100%; position: relative; min-height: 700px">
-            <p style="margin-top: 10px;">
+            <!-- <p style="margin-top: 10px;">
                 <a *ngIf="showPrev" style="cursor: pointer; padding: 10px; color: #0e2244; text-decoration: underline" (click)="prevPDF(e)">Prev</a>
                 <a *ngIf="showNext" style="cursor: pointer; padding: 10px; color: #0e2244; text-decoration: underline"  (click)="nextPDF(e)">Next</a>
-            </p>
+            </p> -->
             <div>
                 <pdf-viewer style="display: block; overflow: auto; position: relative;" [render-text-mode]="2" [original-size]="false" [page]="currPage" [show-all]="false"  [src]="pdfSrc" [render-text]="true" (on-progress)="onProgress($event)" (page-rendered)="pageRendered($event)"  (after-load-complete)="callBackFn($event)"></pdf-viewer>
             </div>
@@ -57,7 +57,7 @@
      </div>
     <div class="btns">
         <button *ngIf="currID > 0" (click)="prev()"><i class="fa fa-caret-left" style="font-size: 17px;"></i></button> 
-        <ul>
+        <ul style="margin-bottom: 30px;">
             <li *ngFor="let x of pdfArr; let i = index;">
                <a  class="navlink" [ngClass]="currID === i ? 'active' : ''" (click)="navigateFrom(i)"><span style="font-family: none;font-size: 20px;">{{i+1}}</span></a>
             </li>

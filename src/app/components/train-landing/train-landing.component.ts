@@ -33,6 +33,8 @@ export class TrainLandingComponent implements OnInit {
   public errorMessage = '';
   public publicURL = environment.public;
   public templates = [];
+  public untrainedTemplates = [];
+  public trainedTemplates = [];
   public isAllTemplateSelected = false;
   public selectedTemplates = [];
   public isAnyTemplateSelected = false;
@@ -54,10 +56,10 @@ export class TrainLandingComponent implements OnInit {
           this.usecases.push(Object.assign(data[property], { use_case_id: property}, {selected: false}));
         }
       }
-      console.log(this.usecases);
+      
     },
     error => {
-      this.errorMessage = 'Unable to retrieve the usecases. Please try again later...';
+      alert('Unable to retrieve the usecases. Please try again later...');
     });
   }
 
@@ -65,7 +67,10 @@ export class TrainLandingComponent implements OnInit {
     this.trainLandingservice.getTemplates(usecaseId).subscribe((data) => {
       if (data) {
         this.templates = data['templates'];
-        console.log("templates ",this.templates);
+        this.trainedTemplates = this.templates.filter((value) => value.is_trained === 1);
+        this.untrainedTemplates = this.templates.filter((value) => value.is_trained === 0);
+        console.log(this.untrainedTemplates);
+        console.log(this.trainedTemplates);
       }
     },
     error => {
@@ -111,7 +116,7 @@ export class TrainLandingComponent implements OnInit {
 
   public navigate(page: string) {
     this.selectedTemplates = this.templates.filter((data => data.selected === true));
-    this.trainLandingservice.storeSelectedTemplate(this.selectedTemplates,this.usecaseid);
+    this.trainLandingservice.storeSelectedTemplate(this.selectedTemplates, this.usecaseid);
     this.router.navigate([page]);
   }
 

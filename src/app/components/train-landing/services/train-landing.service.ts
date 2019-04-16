@@ -23,10 +23,10 @@ export class TrainLandingService {
 
   public getTemplates(usecaseId: string) {
     const params = { 'use_case_id': usecaseId };
-    return this.httpClient.get(`${this.endPoint}/getTemplates`, { params: params });
+    return this.httpClient.get(`${this.endPoint}/getTemplatesForTrain`, { params: params });
   }
 
-  public storeSelectedTemplate(template,usecaseId) {
-    this.selectedTemplate.next({template,usecaseId})
+  public storeSelectedTemplate(template, usecaseId) {
+    this.selectedTemplate.next({template, usecaseId})
   }
 }
