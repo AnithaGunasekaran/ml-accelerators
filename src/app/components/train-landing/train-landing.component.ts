@@ -40,42 +40,50 @@ export class TrainLandingComponent implements OnInit {
   public isAnyTemplateSelected = false;
   public selectedUsecaseName = '';
   private usecaseid = '';
+  private isLoading:boolean = true;
   @ViewChild(ModalComponent) private modal;
 
   constructor(private router: Router, private trainLandingservice: TrainLandingService, private headerSerivce: HeaderService) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.headerSerivce.storeCurrentNavigatedUrl(this.router.url);
     this.getUsecasesData();
+    
   }
 
   public getUsecasesData() {
+   
     this.trainLandingservice.getUsecases().subscribe((data) => {
       if (data) {
         for (let property in data) {
           this.usecases.push(Object.assign(data[property], { use_case_id: property}, {selected: false}));
         }
       }
-      
+      this.isLoading = false;
     },
     error => {
       alert('Unable to retrieve the usecases. Please try again later...');
+      this.isLoading = false;
     });
+   
   }
 
   public getTemplatesData(usecaseId: string) {
+    this.isLoading = true;
     this.trainLandingservice.getTemplates(usecaseId).subscribe((data) => {
       if (data) {
         this.templates = data['templates'];
         this.trainedTemplates = this.templates.filter((value) => value.is_trained === 1);
         this.untrainedTemplates = this.templates.filter((value) => value.is_trained === 0);
-        console.log(this.untrainedTemplates);
-        console.log(this.trainedTemplates);
       }
+      this.isLoading = false;
     },
     error => {
      this.errorMessage = 'Unable to retrieve the templates. Please try again later...';
+     this.isLoading = false;
     });
+   
   }
 
   public selectUsecase(usecase) {

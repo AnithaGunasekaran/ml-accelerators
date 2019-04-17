@@ -1,78 +1,84 @@
  
-
- <div class="row" >
-        <p-progressBar *ngIf="isLoading === true" mode="indeterminate"></p-progressBar>
-        <div class="container" [ngClass]="visibleForm ? 'seltile' : ''">
-                <h1>Usecases</h1>
-                <div class="p-grid" *ngIf="selectedUsecase.length ===  0">
-                    <ng-container *ngFor="let usecase of useCases">
-                        <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
-                        <img src="Card" src="{{publicURL}}{{usecase.image}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
-                        <h6>{{usecase.name}}</h6>
-                        </p-card>
-                    </ng-container>
-                </div>
-    
-                <div  class="p-grid selected" *ngIf="selectedUsecase.length === 1">
-                    <ng-container *ngFor="let usecase of selectedUsecase">
-                            <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
-                                    <img src="Card" src="{{publicURL}}{{usecase.image}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
-                                    <h6>{{usecase.name}}</h6>
-                            </p-card>
-                    </ng-container>
+<div class="extractlanding">
+        <div *ngIf="isExtracting === true"  style="position: absolute; height: 100%; width: 100%; background: rgb(255, 255, 255, 0.8); z-index:10;">
+                <div class="loader">Loading...</div>
+        </div>
+        <div class="row" >
+                <p-progressBar *ngIf="isLoading === true" mode="indeterminate"></p-progressBar>
+                <div class="container" [ngClass]="visibleForm ? 'seltile' : ''">
+                        <h1 style="color: #102244">Usecases</h1>
+                        <div class="p-grid" *ngIf="selectedUsecase.length ===  0">
+                            <ng-container *ngFor="let usecase of useCases">
+                                <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
+                                <img src="Card" src="{{publicURL}}{{usecase.image}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+                                <h6>{{usecase.name}}</h6>
+                                </p-card>
+                            </ng-container>
+                        </div>
+            
+                        <div  class="p-grid selected" *ngIf="selectedUsecase.length === 1">
+                            <ng-container *ngFor="let usecase of selectedUsecase">
+                                    <p-card (click)='showForm(usecase)' [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': usecase.selected}">
+                                            <img src="Card" src="{{publicURL}}{{usecase.image}}" pTooltip="{{usecase.Desc}}" tooltipPosition="top">
+                                            <h6>{{usecase.name}}</h6>
+                                    </p-card>
+                            </ng-container>
+                        </div>
                 </div>
         </div>
-</div>
-
-
-<div class="row">
-    <div class="container-fluid">
-        <div class="template-panel" *ngIf="visibleForm === true" [@enterAnimation]>
-                <button (click)="close()" class="btn btn-secondary back">Back</button>
-                <div class="parent">
-                    <div class="form-container">
-                        <h3 *ngIf="selectedUsecase.length === 1">Selected usecase - {{selectedUsecase[0].name}}</h3>
-                            <div class="template-form">
-                                <div class="wrapper">
-                                    <div class="lbl">
-                                        Select a template:
-                                    </div>
-                                    <div class="radiobtns">
-                                        <div class="ctl" *ngFor="let template of templates">
-                                            <label>
-                                                <input (click)="selectTemplate(template)" name="optradio" type="radio"> <span>{{ template.name }}</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <h4 *ngIf="selectedTemplate">Upload for template - {{selectedTemplate.name}}</h4>
-                                <div [hidden]='disableCtl' class="form">
-                                    <div class="form-group" [formGroup]="uploadPDFsFormGroup">
-                                        <div formArrayName="file">
-                                            <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
-                                                <input [formControlName]="i" [attr.disabled]="disableCtl ? '' : null" (change)="handleFileInput($event,i)" accept=".pdf" type="file"/>
-                                                <button [attr.disabled]="disableCtl ? '' : null"  *ngIf="i === uploadPDFsFormGroup.controls['file'].controls.length -1" class="btn btn-primary" (click)="addItem('file')">+</button>
-                                                <button [attr.disabled]="disableCtl ? '' : null" class="controls" *ngIf="i !== uploadPDFsFormGroup.controls['file'].controls.length -1" class="btn btn-secondary" (click)="removeItem('file',i)">-</button>
-                                                <div *ngIf="uploadResponse.status === 'error'">
-                                                    {{ uploadResponse.message }}
-                                                </div>
-                                                <div>
-                                                    <div *ngIf="uploadResponse.status === 'progress'">
-                                                        <p-progressBar mode="indeterminate"></p-progressBar>
-                                                        <div>{{successMsg}}</div>
-                                                    </div>
+        
+        
+        <div class="row">
+            <div class="container-fluid">
+                <div class="template-panel" *ngIf="visibleForm === true" [@enterAnimation]>
+                        <button (click)="close()" class="btn btn-secondary back">Back</button>
+                        <div class="parent">
+                            <div class="form-container">
+                                <h3 *ngIf="selectedUsecase.length === 1">Selected usecase - {{selectedUsecase[0].name}}</h3>
+                                    <div class="template-form">
+                                        <div class="wrapper">
+                                            <div class="lbl">
+                                                Select a template:
+                                            </div>
+                                            <div class="radiobtns">
+                                                <div class="ctl" *ngFor="let template of templates">
+                                                    <label>
+                                                        <input (click)="selectTemplate(template)" name="optradio" type="radio"> <span>{{ template.name }}</span>
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                <p><button (click)="extractMulti()"  class="btn btn-primary">Extract</button></p>
+                                    <h4 *ngIf="selectedTemplate">Upload for template - {{selectedTemplate.name}}</h4>
+                                        <div [hidden]='disableCtl' class="form">
+                                            <div class="form-group" [formGroup]="uploadPDFsFormGroup">
+                                                <div formArrayName="file">
+                                                    <div *ngFor="let name of uploadPDFsFormGroup.controls['file'].controls; let i = index" style="margin: 10px;">
+                                                        <input [formControlName]="i" [attr.disabled]="disableCtl ? '' : null" (change)="handleFileInput($event,i)" accept=".pdf" type="file"/>
+                                                        <button [attr.disabled]="disableCtl ? '' : null"  *ngIf="i === uploadPDFsFormGroup.controls['file'].controls.length -1" class="btn btn-primary" (click)="addItem('file')">+</button>
+                                                        <button [attr.disabled]="disableCtl ? '' : null" class="controls" *ngIf="i !== uploadPDFsFormGroup.controls['file'].controls.length -1" class="btn btn-secondary" (click)="removeItem('file',i)">-</button>
+                                                        <div *ngIf="uploadResponse.status === 'error'">
+                                                            {{ uploadResponse.message }}
+                                                        </div>
+                                                        <div>
+                                                            <div *ngIf="uploadResponse.status === 'progress'">
+                                                                <p-progressBar mode="indeterminate"></p-progressBar>
+                                                                <div>{{successMsg}}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <p><button (click)="extractMulti()"  class="btn btn-primary">Extract</button></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-         </div>
-</div> 
+                 </div>
+        </div> 
+
+</div>
+
 <!-- <div [hidden]='disableCtl' style="max-width: 800px;margin: 0 auto 20px 0;">
                     <file-drop [attr.disabled]="disableCtl ? '' : null" dropZoneLabel="" (onFileDrop)="dropped($event)"
                     (onFileOver)="fileOver($event)" accept="pdf" (onFileLeave)="fileLeave($event)">

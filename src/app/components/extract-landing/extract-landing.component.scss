@@ -1,3 +1,4 @@
+.extractlanding{
 .p-grid p-card .ui-card-body{
   padding: 0;
 }
@@ -21,6 +22,21 @@
     background: #FFFFFF;
     box-shadow: 10px 10px 16px -11px rgba(0, 0, 0, 0.55);
     border: solid 1px #D4D4D4;
+}
+.loader {
+  color: #007bff;
+  font-size: 7px;
+  margin: 25% auto;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  position: relative;
+  text-indent: -9999em;
+  -webkit-animation: load4 1.3s infinite linear;
+  animation: load4 1.3s infinite linear;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
 }
   .ui-card-body{ 
   padding: 0;
@@ -206,7 +222,10 @@
     color: #FFF;
     border: none;
   }
+  .form-container button.btn-secondary{
+    background: #6c757d;
+  }
   p-checkbox .ui-chkbox-icon {
     background-color: #0F2244;
   }
-
+}

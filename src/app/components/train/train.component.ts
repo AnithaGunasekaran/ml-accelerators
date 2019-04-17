@@ -67,13 +67,15 @@ export class TrainComponent implements OnInit {
     
     //Grab the selected template from Home Page
     this.trainLService.currentSelectedTemplate.subscribe((res:any)=>{
-     
-      console.log("Resss",res)
-      if(res.length === 0 || res === undefined){
+      
+      if (!Object.keys(res).length) {
         this.router.navigate(['home'])
+      } 
+      else{
+        this.selectedTemplateName = res.template[0].name;
+        this.useCaseId = res.usecaseId;
       }
-      this.selectedTemplateName = res.template[0].name;
-      this.useCaseId = res.usecaseId;
+      
     })
     console.log(this.selectedTemplateName)
     this.isLoading = true;

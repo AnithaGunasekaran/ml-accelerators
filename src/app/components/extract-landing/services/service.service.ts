@@ -11,7 +11,9 @@ export class UsecaseService {
 
   private endPoint = environment.apiEndPoint;
   private extractedData = new BehaviorSubject([]);
+  private useCaseExtract = new BehaviorSubject({});
   public currentExtractedData = this.extractedData.asObservable();
+  public currentSelectedUsecase = this.useCaseExtract.asObservable();
 
   constructor(private httpClient:HttpClient) {}
 
@@ -28,8 +30,9 @@ export class UsecaseService {
    }
 
  
-  public storeExtractedData(templates) {
+  public storeExtractedData(templates,usecase) {
     this.extractedData.next(templates);
+    this.useCaseExtract.next(usecase[0])
   }
 
    postFile(data:any, name:string){
@@ -38,11 +41,13 @@ export class UsecaseService {
     .then(data => { return data; });
   }
 
-  postFileMultiPart(formData:FormData){
+  postFileMultiPart(formData:FormData, template_name:string, use_case_id:string){
     const headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
-    headers.append('Accept', 'application/x-www-form-urlencoded');
-    return this.httpClient.post(`http://localhost:5005/profile`,formData, {headers: headers}).toPromise()
+    // headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    // headers.append('Accept', 'application/x-www-form-urlencoded');
+    headers.append('Content-type', 'multipart/form-data');
+    headers.append('Accept','Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3')
+    return this.httpClient.post(`https://54.85.63.69/api/v1/extractUpload?use_case_id=${use_case_id}&template_name=${template_name}`, formData, {observe: 'response'}).toPromise()
     .then(res => res)
     .then(data => { return data; });
   }

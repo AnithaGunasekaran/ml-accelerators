@@ -5,7 +5,6 @@ import {style, state, animate, transition, trigger} from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { UploadEvent, UploadFile, FileSystemFileEntry, FileSystemDirectoryEntry} from 'ngx-file-drop';
-import { AlertPromise } from 'selenium-webdriver';
 import { HeaderService } from '../header/services/header.service';
  
 
@@ -52,6 +51,7 @@ export class ExtractLandingComponent  implements OnInit{
   private isLoading:boolean = false;
   private expand: boolean = false;
   private state:string = '';
+  private isExtracting:boolean = false;
   private selectedUsecase: any  =[];
   private isOpen = true;
 
@@ -146,22 +146,25 @@ export class ExtractLandingComponent  implements OnInit{
   
   extractMulti(){
 
-    this.isLoading =  true;
+    this.isExtracting =  true;
+
     let uploadArr = [];
   
     this.fileToUpload.map((item:any)=>{
       let formData = new FormData();
-      formData.append('fileKey', item, item.name)
-      formData.append('use_case_id', this.selectedUsecase[0].use_case_id);
-      formData.append('template',this.selectedTemplate.name);
+      formData.append('file', item, item.name)
+      // formData.append('use_case_id', this.selectedUsecase[0].use_case_id);
+      // formData.append('template',this.selectedTemplate.name);
       let failedPromises= [];
-      uploadArr.push(this.useCaseService.postFileMultiPart(formData).then((res)=>{
+      uploadArr.push(this.useCaseService.postFileMultiPart(formData,this.selectedTemplate.name,this.selectedUsecase[0].use_case_id).then((res)=>{
+        console.log(res)
         let result:any = {};
         result.template_name= this.selectedTemplate.name;
-        result.file_name = item.name;
-        result.status = `Completed`; 
-        if(res !== `Error`){
-          result.json = res;
+        result.file_name = item.name.split('.').slice(0, -1).join('.');
+        if(res.status === 200){
+          
+          result.status = `Completed`; 
+          result.json = res.body;
         }
         else{
           result.status = `Unable to fetch data`;
@@ -171,13 +174,15 @@ export class ExtractLandingComponent  implements OnInit{
       }).catch((err)=>{
         console.log(err)
         failedPromises.push(err)
+      }).finally(()=>{
+        this.isExtracting = false
       }))
     });
     Promise.all(uploadArr).then((res)=>{
-      console.log("All",res)
-      this.useCaseService.storeExtractedData(res);
+     
+      this.useCaseService.storeExtractedData(res, this.selectedUsecase);
       this.route.navigate(['extract'])
-      this.isLoading = false;
+      this.isExtracting =  false;
      
     });
   }
@@ -201,7 +206,7 @@ export class ExtractLandingComponent  implements OnInit{
               let result:any = {};
               if(res.status === 200){
                 result.template_name= this.selectedTemplate.name;
-                result.file_name = item.name;
+                result.file_name = item.name.split('.').slice(0, -1).join('.');//item.name;
                 if(res.body === "Success"){
                   result.status = `Completed`;
                   result.json = res;
@@ -215,7 +220,7 @@ export class ExtractLandingComponent  implements OnInit{
             }).catch((err)=>{
                 let result:any = {};
                 result.template_name= this.selectedTemplate.name;
-                result.file_name = item.name;
+                result.file_name = item.name.split('.').slice(0, -1).join('.');;
                 result.status = `Unable to fetch data`; 
                 result.json = '';
                 return result;
@@ -224,7 +229,7 @@ export class ExtractLandingComponent  implements OnInit{
         Promise.all(promArray).then((res)=>{
           console.log("Final", res)
           console.log(res.length, readProm.length)
-          this.useCaseService.storeExtractedData(res);
+          this.useCaseService.storeExtractedData(res, this.selectedUsecase);
           this.route.navigate(['extract'])
         })
     });
@@ -257,6 +262,7 @@ export class ExtractLandingComponent  implements OnInit{
 
   removeItem(name:string,i:number){
     const control = <FormArray>this.uploadPDFsFormGroup.controls['file'];
+    this.fileToUpload.splice(i,1)
     control.removeAt(i)
   }
 

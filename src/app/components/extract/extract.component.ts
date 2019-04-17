@@ -46,6 +46,7 @@ export class ExtractComponent implements OnInit {
   disableExtract: Boolean = false;
   imageH: number=0;
   errorMessage: string = '';
+  use_case_id:string = '';
 
   constructor(private apiService:TemplatesService, private router: Router, private homeSer:HomeService, private useCaseSer:UsecaseService) { }
 
@@ -53,14 +54,25 @@ export class ExtractComponent implements OnInit {
       console.log("Extract")
       this.useCaseSer.currentExtractedData.subscribe((res)=>{
         console.log(res)
+        if (!Object.keys(res).length) {
+          this.router.navigate(['home'])
+        } 
         this.docsArray = res;
+      })
+
+      this.useCaseSer.currentSelectedUsecase.subscribe((res:any)=>{
+        console.log(res)
+        if (!Object.keys(res).length) {
+          this.router.navigate(['home'])
+        } 
+        this.use_case_id = res.use_case_id;
       })
      
       var pArr = []; let failedPromises = [];
       this.isLoading = true;
       this.selectedTemplates.map((item:any)=>{
         console.log(item.name)
-          pArr.push(this.apiService.fetchFiles(environment.usecaseId,item.name).then((res:any)=>{
+          pArr.push(this.apiService.fetchFiles(this.use_case_id,item.name).then((res:any)=>{
             res.map((items) => {
               this.docsArray.push(Object.assign(items, {status: "Not started"} , {rows: 0}, {json:''}, {pdfLink: items.name}))
             });
@@ -97,14 +109,9 @@ export class ExtractComponent implements OnInit {
   openPDF($event,templateName,itemName){
     $event.preventDefault();
     this.isLoading = true;
-    this.apiService.fetchPDF(environment.usecaseId,templateName,itemName).then((res:any)=>{
+    this.apiService.fetchPDF(this.use_case_id ,templateName,itemName).then((res:any)=>{
       const fileURL = URL.createObjectURL(res);
       window.open(fileURL, '_blank');
-      // var a = document.createElement("a");
-      // document.body.appendChild(a);
-      // a.href = fileURL;
-      // a.target = '_blank';
-      // a.click();
      }).catch(()=>{
       this.errorMessage = `Cannot fetch the PDF - ${itemName}`;
     }).finally(()=>{
@@ -128,7 +135,7 @@ export class ExtractComponent implements OnInit {
       var extractArr = [];
       this.docsArray.map((item, index)=>{
         item.status = "In progress"
-        extractArr.push(this.apiService.extractJSON(environment.usecaseId,item.template_name, item.file_name).then((res:any)=>{
+        extractArr.push(this.apiService.extractJSON(this.use_case_id,item.template_name, item.file_name).then((res:any)=>{
               item.status = `Completed`;
               item.json = res; 
               this.show = 'show';
@@ -236,7 +243,9 @@ export class ExtractComponent implements OnInit {
     if(doc.json !== ""){
       this.pdfSrc = "";
       this.jsonHTML = this.formatJSON(doc.json,"jsonTable");
-      this.apiService.fetchPDF(environment.usecaseId,doc.template_name, doc.file_name).then((res:any)=>{
+    
+
+      this.apiService.fetchPDF(this.use_case_id,doc.template_name, doc.file_name).then((res:any)=>{
         const fileURL = URL.createObjectURL(res);
         this.pdfSrc = fileURL;
       }).finally(()=>{

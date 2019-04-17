@@ -1,8 +1,10 @@
 
+ <p-progressBar mode="indeterminate" *ngIf="isLoading === true"></p-progressBar>
 <div class="trainlanding">
   
   <div class="row">
     <h1>Usecases</h1>
+   
     <div class="p-grid">
       <ng-container *ngFor="let usecase of usecases">
         <p-card [style]="{width: '200px'}" [ngStyle]="{'display':(!usecase.selected && isAnyUsecaseSelected) ? 'none' : '' }"
@@ -24,6 +26,10 @@
       <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
         {{errorMessage}}
       </div>
+      <ng-container *ngIf="templates.length">
+          <p-button class="train-button" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}"
+            [disabled]="!isAnyTemplateSelected" (click)="navigate('train')"></p-button>
+        </ng-container>
       <div class="untrained-templates" *ngIf="untrainedTemplates.length">
         <h5>Untrained Template(s)</h5>
         <div class="p-grid">
@@ -50,10 +56,7 @@
           </ng-container>
         </div>
       </div>
-      <ng-container *ngIf="templates.length">
-        <p-button class="train-button" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}"
-          [disabled]="!isAnyTemplateSelected" (click)="navigate('train')"></p-button>
-      </ng-container>
+     
       <app-modal></app-modal>
     </div>
   </div>
