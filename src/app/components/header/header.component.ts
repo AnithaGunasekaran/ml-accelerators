@@ -30,7 +30,6 @@ export class HeaderComponent implements OnInit {
   }
 
   public navigate(path: string) {
-
     this.router.navigate([path]);
   }
 

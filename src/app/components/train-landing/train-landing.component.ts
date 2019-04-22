@@ -40,7 +40,7 @@ export class TrainLandingComponent implements OnInit {
   public isAnyTemplateSelected = false;
   public selectedUsecaseName = '';
   private usecaseid = '';
-  private isLoading:boolean = true;
+  private isLoading = true;
   @ViewChild(ModalComponent) private modal;
 
   constructor(private router: Router, private trainLandingservice: TrainLandingService, private headerSerivce: HeaderService) { }

@@ -1,10 +1,9 @@
-
- <p-progressBar mode="indeterminate" *ngIf="isLoading === true"></p-progressBar>
+<p-progressBar mode="indeterminate" *ngIf="isLoading === true"></p-progressBar>
 <div class="trainlanding">
-  
+
   <div class="row">
-    <h1>Usecases</h1>
-   
+    <h5>USECASES FOR TRAINING</h5>
+
     <div class="p-grid">
       <ng-container *ngFor="let usecase of usecases">
         <p-card [style]="{width: '200px'}" [ngStyle]="{'display':(!usecase.selected && isAnyUsecaseSelected) ? 'none' : '' }"
@@ -20,16 +19,14 @@
     <div class="template-panel" *ngIf="isAnyUsecaseSelected" [@enterAnimation]>
       <div class="heading">
         <h4>Select a Template</h4>
-        <button class="btn btn-secondary" (click)='close()'
-          id="close">Back</button>
+        <button class="btn btn-secondary" (click)='close()' id="close">Back</button>
       </div>
       <div *ngIf="errorMessage != ''" class="alert alert-danger" role="alert">
         {{errorMessage}}
       </div>
       <ng-container *ngIf="templates.length">
-          <p-button class="train-button" label="Train" pTooltip="{{(selectedTemplates.length === 1) ? '' : 'Please select only one template'}}"
-            [disabled]="!isAnyTemplateSelected" (click)="navigate('train')"></p-button>
-        </ng-container>
+        <p-button class="train-button" label="Train" [disabled]="!isAnyTemplateSelected" (click)="navigate('train')"></p-button>
+      </ng-container>
       <div class="untrained-templates" *ngIf="untrainedTemplates.length">
         <h5>Untrained Template(s)</h5>
         <div class="p-grid">
@@ -44,7 +41,7 @@
         </div>
       </div>
       <div class="trained-templates" *ngIf="trainedTemplates.length">
-        <h5>Trained Template(s)</h5>
+        <h5 [ngStyle]="{'border-top':(untrainedTemplates.length) ? '2px solid #eee' : '' }">Trained Template(s)</h5>
         <div class="p-grid">
           <ng-container *ngFor="let template of trainedTemplates">
             <p-card [style]="{width: '200px'}" class="p-sm-6 p-md-4 p-lg-3 p-xl-2" [ngClass]="{'selected': template.selected}"
@@ -56,7 +53,7 @@
           </ng-container>
         </div>
       </div>
-     
+
       <app-modal></app-modal>
     </div>
   </div>
